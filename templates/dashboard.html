@@ -208,6 +208,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const bookmarkId = this.getAttribute('data-bookmark-id');
             const bookmarkElement = document.getElementById(`bookmark-${bookmarkId}`);
             
+            // Potwierdzenie przed usunięciem
+            if (!confirm('{{ t("bookmarks.confirm_delete") }}')) {
+                return; // Przerwij jeśli użytkownik anulował
+            }
+            
             // Wykonaj żądanie AJAX
             fetch(this.action, {
                 method: 'POST',

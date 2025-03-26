@@ -67,7 +67,8 @@
   "bookmarks": {
     "delete_success": "Bookmark deleted",
     "delete_button": "✕",
-    "imported_description": "Imported bookmark"
+    "imported_description": "Imported bookmark",
+    "confirm_delete": "Are you sure you want to delete this bookmark?"
   },
   "errors": {
     "must_login": "You must be logged in",

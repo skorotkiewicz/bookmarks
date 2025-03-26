@@ -67,7 +67,8 @@
   "bookmarks": {
     "delete_success": "Zakładka usunięta",
     "delete_button": "✕",
-    "imported_description": "Zaimportowana zakładka"
+    "imported_description": "Zaimportowana zakładka",
+    "confirm_delete": "Czy napewno chcesz usunąć tę zakładkę?"
   },
   "errors": {
     "must_login": "Musisz być zalogowany",
