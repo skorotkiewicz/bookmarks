@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.bookmarks {
+    margin-top: 20px;
+}
+.bookmark-item {
+    display: flex;
+    align-items: center;
+    /* padding: 10px 0; */
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.bookmark-item:hover {
+    background-color: #dfdfdf;
+}
+.bookmark-index {
+    color: #888;
+    margin-right: 10px;
+    min-width: 20px;
+    text-align: right;
+    font-size: 13px;
+}
+.bookmark-favicon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    object-fit: contain;
+}
+.bookmark-content {
+    flex-grow: 1;
+}
+.bookmark-title {
+    display: block;
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 15px;
+}
+.bookmark-url {
+    display: block;
+    text-decoration: none;
+
+    color: #828282;
+    font-size: 12px;
+    /* margin-top: 5px; */
+}
+.bookmark-description {
+    color: #666;
+    font-size: 13px;
+    /* margin-top: 3px; */
+}
+.delete-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 18px;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+.delete-btn:hover {
+    opacity: 1;
+    color: var(--accent-color);
+}
+.empty-state {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
+</style>
+
+<div class="bookmarks">
+    {% if user.bookmarks %}
+        {% for bookmark in user.bookmarks %}
+        <div class="bookmark-item">
+            <div class="bookmark-index">{{ loop.index }}.</div>
+            <img src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon">
+            <div class="bookmark-content">
+                <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-title">
+                    {{ bookmark.title }}
+                </a>
+                <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-url">
+                    {{ bookmark.url }}
+                </a>
+                {% if bookmark.description %}
+                    <div class="bookmark-description">{{ bookmark.description }}</div>
+                {% endif %}
+            </div>
+            <form method="POST" action="{{ url_for('delete_bookmark', bookmark_id=bookmark.id) }}" style="margin: 0;">
+                <button type="submit" class="delete-btn">✕</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <p>Brak zakładek</p>
+            <a href="{{ url_for('add_bookmark') }}" class="btn" style="margin-top: 10px;">Dodaj pierwszą zakładkę</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

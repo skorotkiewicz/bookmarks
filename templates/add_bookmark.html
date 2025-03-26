@@ -1,0 +1,49 @@
+<!-- templates/add_bookmark.html -->
+{% extends "base.html" %}
+{% block content %}
+<h1 style="text-align: center;">Dodaj nową zakładkę</h1>
+<form id="bookmarkForm" method="POST">
+    <input type="text" id="titleInput" name="title" placeholder="Tytuł" required>
+    <input type="url" id="urlInput" name="url" placeholder="URL" required>
+    <textarea name="description" placeholder="Opis (opcjonalnie)"></textarea>
+    <input type="submit" value="Dodaj zakładkę">
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlInput = document.getElementById('urlInput');
+    const titleInput = document.getElementById('titleInput');
+
+    // Automatyczne pobieranie tytułu przy wpisaniu URL
+    urlInput.addEventListener('blur', function() {
+        const url = urlInput.value.trim();
+        if (url && !titleInput.value) {
+            fetch('/get_page_title', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `url=${encodeURIComponent(url)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.title) {
+                    titleInput.value = data.title;
+                }
+            })
+            .catch(error => {
+                console.error('Błąd:', error);
+            });
+        }
+    });
+
+    // Obsługa GET parameterów z zakładki
+    const urlParams = new URLSearchParams(window.location.search);
+    const title = urlParams.get('title');
+    const url = urlParams.get('url');
+
+    if (title) titleInput.value = title;
+    if (url) urlInput.value = url;
+});
+</script>
+{% endblock %}

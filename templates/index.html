@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="text-align: center;">
+    <h1>Witaj w Menedżerze Zakładek</h1>
+    <p>Zaloguj się lub zarejestruj, aby zarządzać swoimi zakładkami.</p>
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('login') }}" style="margin-right: 10px; text-decoration: none; padding: 10px; background-color: #4CAF50; color: white; border-radius: 5px;">Zaloguj się</a>
+        <a href="{{ url_for('register') }}" style="text-decoration: none; padding: 10px; background-color: #008CBA; color: white; border-radius: 5px;">Zarejestruj się</a>
+    </div>
+</div>
+{% endblock %}

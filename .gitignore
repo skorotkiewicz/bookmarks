@@ -1,0 +1,4 @@
+instance
+static/cache/favicons/*
+!static/cache/favicons/.gitkeep
+venv

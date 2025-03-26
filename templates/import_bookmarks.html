@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 style="text-align: center;">Import zakładek</h1>
+
+<div style="max-width: 300px; margin: 20px auto;">
+    <h2>Import z przeglądarki Firefox</h2>
+    <p>Jak wyeksportować zakładki z Firefox:</p>
+    <ol>
+        <li>Otwórz Menedżera Zakładek (Ctrl+Shift+O)</li>
+        <li>Kliknij "Importuj i kopie zapasowe"</li>
+        <li>Wybierz "Eksportuj zakładki do pliku HTML"</li>
+        <li>Zapisz plik</li>
+    </ol>
+
+    <form method="POST" enctype="multipart/form-data" style="margin: 20px 0 20px 0; border: 1px solid #ccc; padding: 5px; border-radius: 5px;">
+        <input type="file" name="bookmarks_file" accept=".html" required>
+        <input type="submit" value="Importuj zakładki">
+    </form>
+</div>
+
+<div style="max-width: 300px; margin: 20px auto; text-align: center;">
+    <h2>Skrypt zakładkowy</h2>
+    <p>Dodaj ten skrypt do zakładek w przeglądarce:</p>
+    <a role="button" href="javascript:(function(){window.location.href='http://127.0.0.1:5000/add_bookmark?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(document.URL);})();">Zakładki</a>
+</div>
+{% endblock %}
