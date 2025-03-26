@@ -102,6 +102,13 @@
     "error_removing_duplicates": "Fehler beim Entfernen von Duplikaten",
     "no_bookmarks_selected": "Keine Lesezeichen zum Behalten ausgewählt",
     "duplicate_group": "Gruppe",
-    "keep_at_least_one": "Du musst mindestens ein Lesezeichen aus jeder Gruppe behalten!"
+    "keep_at_least_one": "Du musst mindestens ein Lesezeichen aus jeder Gruppe behalten!",
+    "fetch_favicons": "Alle Favicons herunterladen",
+    "fetch_favicons_description": "Lade Favicons für alle Lesezeichen herunter, die noch keines haben",
+    "fetch_favicons_button": "Favicons herunterladen",
+    "fetching_favicons": "Favicons werden heruntergeladen...",
+    "favicons_fetched_success": "Favicons wurden erfolgreich heruntergeladen!",
+    "error_fetching_favicons": "Fehler beim Herunterladen der Favicons",
+    "no_favicons_to_fetch": "Es gibt keine Favicons zum Herunterladen!"
   }
 }

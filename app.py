@@ -278,9 +278,20 @@ def fetch_and_save_favicon(url, bookmark_id):
                 favicon_url = f"{parsed_url.scheme}://{parsed_url.netloc}/favicon.ico"
             
             # Upewnienie się, że URL jest absolutny
-            if favicon_url.startswith('/'):
-                parsed_url = urllib.parse.urlparse(url)
+            parsed_url = urllib.parse.urlparse(url)
+            parsed_favicon = urllib.parse.urlparse(favicon_url)
+            
+            # Jeśli URL jest absolutny (ma scheme i netloc) - używamy go bezpośrednio
+            if parsed_favicon.scheme and parsed_favicon.netloc:
+                pass  # URL już jest absolutny, nic nie robimy
+            # Jeśli URL zaczyna się od / - jest relatywny do domeny
+            elif favicon_url.startswith('/'):
                 favicon_url = f"{parsed_url.scheme}://{parsed_url.netloc}{favicon_url}"
+            # Jeśli URL nie ma schematu ani nie zaczyna się od / - relatywna ścieżka
+            elif not parsed_favicon.scheme:
+                # Usuń ostatni segment z URL (aby się cofnąć do katalogu bazowego)
+                base_url = '/'.join(url.split('/')[:-1]) + '/'
+                favicon_url = urllib.parse.urljoin(base_url, favicon_url)
             
             # Pobieranie favicon
             favicon_response = requests.get(favicon_url, timeout=5)
@@ -532,6 +543,36 @@ def remove_duplicates():
     db.session.commit()
     
     return {'success': True, 'deleted_count': delete_count}
+
+@app.route('/fetch_all_favicons')
+def fetch_all_favicons():
+    """Fetch favicons for all bookmarks that don't have one yet"""
+    if 'user_id' not in session:
+        return {'error': get_text('errors.not_logged_in')}, 403
+    
+    # Get all user's bookmarks that don't have a favicon
+    bookmarks = Bookmark.query.filter_by(user_id=session['user_id']).filter(
+        (Bookmark.favicon_path.is_(None)) | 
+        (Bookmark.favicon_path == '')
+    ).all()
+    
+    if not bookmarks:
+        return {'success': False, 'message': get_text('tools.no_favicons_to_fetch')}
+    
+    fetched_count = 0
+    for bookmark in bookmarks:
+        favicon_filename = fetch_and_save_favicon(bookmark.url, bookmark.id)
+        if favicon_filename:
+            bookmark.favicon_path = favicon_filename
+            # Zapisz zmiany od razu po pobraniu każdego favicon
+            db.session.commit()
+            fetched_count += 1
+    
+    return {
+        'success': True, 
+        'message': get_text('tools.favicons_fetched_success'), 
+        'count': fetched_count
+    }
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == 'dev':

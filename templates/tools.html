@@ -11,6 +11,12 @@
         <p>{{ t('tools.duplicates_description') }}</p>
         <button id="findDuplicatesBtn" class="btn">{{ t('tools.find_duplicates_button') }}</button>
     </div>
+    
+    <div class="tool-card">
+        <h2>{{ t('tools.fetch_favicons') }}</h2>
+        <p>{{ t('tools.fetch_favicons_description') }}</p>
+        <button id="fetchFaviconsBtn" class="btn">{{ t('tools.fetch_favicons_button') }}</button>
+    </div>
 </div>
 
 <div id="resultsContainer" class="results-container" style="display: none;">
@@ -129,6 +135,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const findDuplicatesBtn = document.getElementById('findDuplicatesBtn');
+        const fetchFaviconsBtn = document.getElementById('fetchFaviconsBtn');
         const resultsContainer = document.getElementById('resultsContainer');
         const duplicatesList = document.getElementById('duplicatesList');
         const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
@@ -267,6 +274,33 @@
                 duplicatesList.appendChild(groupDiv);
             });
         }
+        
+        // Obsługa pobierania faviconów
+        fetchFaviconsBtn.addEventListener('click', function() {
+            // Show loading state
+            fetchFaviconsBtn.disabled = true;
+            fetchFaviconsBtn.textContent = '{{ t('tools.fetching_favicons') }}';
+            
+            // Fetch favicons from the server
+            fetch('/fetch_all_favicons')
+                .then(response => response.json())
+                .then(data => {
+                    fetchFaviconsBtn.disabled = false;
+                    fetchFaviconsBtn.textContent = '{{ t('tools.fetch_favicons_button') }}';
+                    
+                    if (data.success) {
+                        alert(data.message + ' (' + data.count + ')');
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    fetchFaviconsBtn.disabled = false;
+                    fetchFaviconsBtn.textContent = '{{ t('tools.fetch_favicons_button') }}';
+                    alert('{{ t('tools.error_fetching_favicons') }}');
+                });
+        });
     });
 </script>
 {% endblock %}

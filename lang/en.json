@@ -102,6 +102,13 @@
     "error_removing_duplicates": "Error removing duplicates",
     "no_bookmarks_selected": "No bookmarks selected to keep",
     "duplicate_group": "Group",
-    "keep_at_least_one": "You must keep at least one bookmark from each group!"
+    "keep_at_least_one": "You must keep at least one bookmark from each group!",
+    "fetch_favicons": "Fetch All Favicons",
+    "fetch_favicons_description": "Download favicons for all bookmarks that don't have one yet",
+    "fetch_favicons_button": "Fetch Favicons",
+    "fetching_favicons": "Fetching favicons...",
+    "favicons_fetched_success": "Favicons have been fetched successfully!",
+    "error_fetching_favicons": "Error fetching favicons",
+    "no_favicons_to_fetch": "There are no favicons to fetch!"
   }
 }

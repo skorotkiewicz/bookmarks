@@ -102,6 +102,13 @@
     "error_removing_duplicates": "Błąd podczas usuwania duplikatów",
     "no_bookmarks_selected": "Nie wybrano zakładek do zachowania",
     "duplicate_group": "Grupa",
-    "keep_at_least_one": "Musisz zachować co najmniej jedną zakładkę z każdej grupy!"
+    "keep_at_least_one": "Musisz zachować co najmniej jedną zakładkę z każdej grupy!",
+    "fetch_favicons": "Pobierz Wszystkie Favicony",
+    "fetch_favicons_description": "Pobierz favicony dla wszystkich zakładek, które ich jeszcze nie mają",
+    "fetch_favicons_button": "Pobierz Favicony",
+    "fetching_favicons": "Pobieranie faviconów...",
+    "favicons_fetched_success": "Favicony zostały pomyślnie pobrane!",
+    "error_fetching_favicons": "Błąd podczas pobierania faviconów",
+    "no_favicons_to_fetch": "Nie ma faviconów do pobrania!"
   }
 }
