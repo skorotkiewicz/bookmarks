@@ -108,7 +108,7 @@ For custom deployment configuration, modify the server settings in the `app.py` 
 
 ## License
 
-[Your License Information]
+[MIT License](https://github.com/skorotkiewicz/bookmarks/blob/del/LICENSE)
 
 ## Acknowledgements
 
