@@ -194,6 +194,12 @@ def add_bookmark():
         db.session.add(new_bookmark)
         db.session.commit()
         
+        # Fetch favicon immediately after adding
+        favicon_filename = fetch_and_save_favicon(url, new_bookmark.id)
+        if favicon_filename:
+            new_bookmark.favicon_path = favicon_filename
+            db.session.commit()
+        
         flash(get_text('add_bookmark.success'), 'success')
         return redirect(url_for('dashboard'))
     
@@ -210,6 +216,15 @@ def delete_bookmark(bookmark_id):
     if bookmark.user_id != session['user_id']:
         flash(get_text('errors.no_permission'), 'error')
         return redirect(url_for('dashboard'))
+    
+    # Delete favicon file if it exists
+    if bookmark.favicon_path:
+        favicon_path = os.path.join(app.config['FAVICON_FOLDER'], bookmark.favicon_path)
+        if os.path.exists(favicon_path):
+            try:
+                os.remove(favicon_path)
+            except Exception as e:
+                print(f"Error removing favicon: {e}")
     
     db.session.delete(bookmark)
     db.session.commit()
