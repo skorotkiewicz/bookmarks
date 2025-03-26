@@ -148,6 +148,11 @@ def delete_bookmark(bookmark_id):
     db.session.delete(bookmark)
     db.session.commit()
     
+    # Jeśli to żądanie AJAX, zwróć JSON zamiast przekierowania
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return {'success': True, 'message': 'Zakładka usunięta'}
+    
+    # Dla tradycyjnego żądania - przekierowanie
     flash('Zakładka usunięta', 'success')
     return redirect(url_for('dashboard'))
 

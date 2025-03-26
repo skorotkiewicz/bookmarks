@@ -68,12 +68,22 @@
     padding: 20px;
     color: #888;
 }
+.hidden {
+    display: none !important;
+}
+.bookmark-deleted {
+    animation: fade-out 0.5s;
+}
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
 </style>
 
 <div class="bookmarks">
     {% if user.bookmarks %}
         {% for bookmark in user.bookmarks %}
-        <div class="bookmark-item">
+        <div class="bookmark-item" id="bookmark-{{ bookmark.id }}">
             <div class="bookmark-index">{{ loop.index }}.</div>
             <img src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon">
             <div class="bookmark-content">
@@ -87,16 +97,97 @@
                     <div class="bookmark-description">{{ bookmark.description }}</div>
                 {% endif %}
             </div>
-            <form method="POST" action="{{ url_for('delete_bookmark', bookmark_id=bookmark.id) }}" style="margin: 0;">
+            <form class="delete-form" data-bookmark-id="{{ bookmark.id }}" data-index="{{ loop.index }}" method="POST" action="{{ url_for('delete_bookmark', bookmark_id=bookmark.id) }}" style="margin: 0;">
                 <button type="submit" class="delete-btn">✕</button>
             </form>
         </div>
         {% endfor %}
     {% else %}
-        <div class="empty-state">
+        <div class="empty-state" id="empty-state">
             <p>Brak zakładek</p>
             <a href="{{ url_for('add_bookmark') }}" class="btn" style="margin-top: 10px;">Dodaj pierwszą zakładkę</a>
         </div>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Pobierz wszystkie formularze usuwania
+    const deleteForms = document.querySelectorAll('.delete-form');
+    
+    // Dodaj obsługę zdarzenia do każdego formularza
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Zapobiegaj domyślnej akcji formularza
+            
+            const bookmarkId = this.getAttribute('data-bookmark-id');
+            const bookmarkElement = document.getElementById(`bookmark-${bookmarkId}`);
+            
+            // Wykonaj żądanie AJAX
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Dodaj klasę animacji
+                    bookmarkElement.classList.add('bookmark-deleted');
+                    
+                    // Po zakończeniu animacji usuń element z DOM
+                    setTimeout(() => {
+                        bookmarkElement.remove();
+                        
+                        // Zaktualizuj numerację
+                        updateBookmarkIndexes();
+                        
+                        // Sprawdź, czy lista jest pusta
+                        checkIfEmpty();
+                    }, 500); // Czas odpowiadający długości animacji
+                }
+            })
+            .catch(error => {
+                console.error('Błąd:', error);
+            });
+        });
+    });
+    
+    // Funkcja aktualizująca numerację zakładek
+    function updateBookmarkIndexes() {
+        const indexElements = document.querySelectorAll('.bookmark-index');
+        indexElements.forEach((el, index) => {
+            el.textContent = `${index + 1}.`;
+        });
+    }
+    
+    // Funkcja sprawdzająca, czy lista jest pusta
+    function checkIfEmpty() {
+        const bookmarkItems = document.querySelectorAll('.bookmark-item');
+        const emptyState = document.getElementById('empty-state');
+        const bookmarksContainer = document.querySelector('.bookmarks');
+        
+        if (bookmarkItems.length === 0 && !emptyState) {
+            // Utwórz i dodaj komunikat o pustej liście
+            const emptyStateDiv = document.createElement('div');
+            emptyStateDiv.className = 'empty-state';
+            emptyStateDiv.id = 'empty-state';
+            
+            const emptyText = document.createElement('p');
+            emptyText.textContent = 'Brak zakładek';
+            
+            const addLink = document.createElement('a');
+            addLink.href = '{{ url_for("add_bookmark") }}';
+            addLink.className = 'btn';
+            addLink.style.marginTop = '10px';
+            addLink.textContent = 'Dodaj pierwszą zakładkę';
+            
+            emptyStateDiv.appendChild(emptyText);
+            emptyStateDiv.appendChild(addLink);
+            bookmarksContainer.appendChild(emptyStateDiv);
+        }
+    }
+});
+</script>
 {% endblock %}
