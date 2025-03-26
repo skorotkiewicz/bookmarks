@@ -169,7 +169,7 @@ def dashboard():
         flash(get_text('errors.must_login'), 'error')
         return redirect(url_for('login'))
     
-    user = User.query.get(session['user_id'])
+    user = db.session.get(User, session['user_id'])
     bookmarks = Bookmark.query.filter_by(user_id=user.id).order_by(Bookmark.created_at.desc()).all()
     return render_template('dashboard.html', user=user, bookmarks=bookmarks)
 
@@ -361,7 +361,7 @@ def export_bookmarks():
         flash(get_text('errors.must_login'), 'error')
         return redirect(url_for('login'))
     
-    user = User.query.get(session['user_id'])
+    user = db.session.get(User, session['user_id'])
     bookmarks = Bookmark.query.filter_by(user_id=user.id).all()
     
     # Create Firefox bookmarks HTML file structure

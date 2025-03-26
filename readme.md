@@ -16,6 +16,8 @@ python app.py dev
 
 # run in prod mode
 python app.py
+
+deactivate
 ```
 
 i18n  
