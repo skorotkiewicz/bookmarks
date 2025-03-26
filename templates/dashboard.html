@@ -30,16 +30,30 @@
 .bookmark-content {
     flex-grow: 1;
 }
+.bookmark-title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
 .bookmark-title {
-    display: block;
     color: var(--text-color);
     text-decoration: none;
     font-size: 15px;
 }
+.bookmark-date {
+    display: none;
+    color: #999;
+    font-size: 11px;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+.bookmark-item:hover .bookmark-date {
+    display: block;
+}
 .bookmark-url {
     display: block;
     text-decoration: none;
-
     color: #828282;
     font-size: 12px;
     /* margin-top: 5px; */
@@ -152,9 +166,12 @@
             <div class="bookmark-index">{{ loop.index }}.</div>
             <img src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon">
             <div class="bookmark-content">
-                <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-title">
-                    {{ bookmark.title }}
-                </a>
+                <div class="bookmark-title-container">
+                    <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-title">
+                        {{ bookmark.title }}
+                    </a>
+                    <span class="bookmark-date">{{ bookmark.created_at.strftime('%d-%m-%Y, %H:%M') }}</span>
+                </div>
                 <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-url">
                     {{ bookmark.url }}
                 </a>

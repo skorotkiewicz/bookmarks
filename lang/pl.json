@@ -59,7 +59,10 @@
     "no_file": "Nie wybrano pliku",
     "bookmark_count": "Zaimportowano {count} zakładek",
     "bookmarklet_title": "Skrypt zakładkowy",
-    "bookmarklet_desc": "Dodaj ten skrypt do zakładek w przeglądarce:"
+    "bookmarklet_desc": "Dodaj ten skrypt do zakładek w przeglądarce:",
+    "export_title": "Eksportuj zakładki",
+    "export_desc": "Eksportuj swoje zakładki do pliku HTML kompatybilnego z Firefox",
+    "export_button": "Eksportuj zakładki"
   },
   "bookmarks": {
     "delete_success": "Zakładka usunięta",

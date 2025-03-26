@@ -59,7 +59,10 @@
     "no_file": "No file selected",
     "bookmark_count": "Imported {count} bookmarks",
     "bookmarklet_title": "Bookmarklet",
-    "bookmarklet_desc": "Add this script to your browser bookmarks:"
+    "bookmarklet_desc": "Add this script to your browser bookmarks:",
+    "export_title": "Export bookmarks",
+    "export_desc": "Export your bookmarks to a Firefox compatible HTML file",
+    "export_button": "Export bookmarks"
   },
   "bookmarks": {
     "delete_success": "Bookmark deleted",

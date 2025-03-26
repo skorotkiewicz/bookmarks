@@ -18,6 +18,14 @@
     </form>
 </div>
 
+<div style="max-width: 300px; margin: 20px auto;">
+    <h2>{{ t('import_bookmarks.export_title') }}</h2>
+    <p>{{ t('import_bookmarks.export_desc') }}</p>
+    <form action="{{ url_for('export_bookmarks') }}" method="GET" style="margin: 20px 0 20px 0; text-align: center;">
+        <button type="submit" style="padding: 5px 10px;">{{ t('import_bookmarks.export_button') }}</button>
+    </form>
+</div>
+
 <div style="max-width: 300px; margin: 20px auto; text-align: center;">
     <h2>{{ t('import_bookmarks.bookmarklet_title') }}</h2>
     <p>{{ t('import_bookmarks.bookmarklet_desc') }}</p>

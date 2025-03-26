@@ -59,7 +59,10 @@
     "no_file": "Keine Datei ausgewählt",
     "bookmark_count": "{count} Lesezeichen importiert",
     "bookmarklet_title": "Bookmarklet",
-    "bookmarklet_desc": "Füge dieses Skript als Lesezeichen in deinem Browser hinzu:"
+    "bookmarklet_desc": "Füge dieses Skript als Lesezeichen in deinem Browser hinzu:",
+    "export_title": "Lesezeichen exportieren",
+    "export_desc": "Exportiere deine Lesezeichen als Firefox-kompatible HTML-Datei",
+    "export_button": "Lesezeichen exportieren"
   },
   "bookmarks": {
     "delete_success": "Lesezeichen gelöscht",

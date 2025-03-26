@@ -3,13 +3,14 @@ import sys
 import json
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, render_template, request, redirect, url_for, flash, session, g
+from flask import Flask, render_template, request, redirect, url_for, flash, session, g, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta, datetime
 import urllib.parse
 import hashlib
 from functools import wraps
+import time
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -353,6 +354,46 @@ def import_bookmarks():
             return redirect(url_for('dashboard'))
     
     return render_template('import_bookmarks.html')
+
+@app.route('/export_bookmarks')
+def export_bookmarks():
+    if 'user_id' not in session:
+        flash(get_text('errors.must_login'), 'error')
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    bookmarks = Bookmark.query.filter_by(user_id=user.id).all()
+    
+    # Create Firefox bookmarks HTML file structure
+    html = f'''<!DOCTYPE NETSCAPE-Bookmark-file-1>
+<!-- This is an automatically generated file.
+     It will be read and overwritten.
+     DO NOT EDIT! -->
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<TITLE>Bookmarks</TITLE>
+<H1>Bookmarks</H1>
+<DL><p>
+    <DT><H3 ADD_DATE="{int(time.time())}" LAST_MODIFIED="{int(time.time())}">Exported from {get_text('app_name')}</H3>
+    <DL><p>
+'''
+    
+    # Add each bookmark
+    for bookmark in bookmarks:
+        # Convert datetime to unix timestamp for ADD_DATE
+        add_date = int(bookmark.created_at.timestamp()) if bookmark.created_at else int(time.time())
+        html += f'        <DT><A HREF="{bookmark.url}" ADD_DATE="{add_date}">{bookmark.title}</A>\n'
+    
+    # Close HTML structure
+    html += '''    </DL><p>
+</DL><p>
+'''
+    
+    # Create response with HTML content
+    response = make_response(html)
+    response.headers['Content-Type'] = 'text/html'
+    response.headers['Content-Disposition'] = 'attachment; filename=bookmarks.html'
+    
+    return response
 
 @app.route('/get_page_title', methods=['POST'])
 def fetch_page_title():
