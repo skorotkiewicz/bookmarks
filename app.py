@@ -1,21 +1,87 @@
 import os
 import sys
+import json
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta, datetime
 import urllib.parse
 import hashlib
+from functools import wraps
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookmarks.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit rozmiaru pliku do 16 MB
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Maximum file size 16 MB
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=90)
 app.config['FAVICON_FOLDER'] = os.path.join(app.static_folder, 'cache', 'favicons')
+app.config['LANGUAGES'] = ['en', 'pl', "de"]
+app.config['DEFAULT_LANGUAGE'] = 'en'
+
+# Load language files
+def load_language(lang_code):
+    try:
+        with open(os.path.join('lang', f'{lang_code}.json'), 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        # Fallback to default language if requested language file is not found
+        if lang_code != app.config['DEFAULT_LANGUAGE']:
+            return load_language(app.config['DEFAULT_LANGUAGE'])
+        return {}
+
+# Add a function to get text based on translation key
+def get_text(key, default=None, **kwargs):
+    lang = session.get('lang', app.config['DEFAULT_LANGUAGE'])
+    translations = load_language(lang)
+    
+    # Split dot notation key into parts (e.g., "login.title" -> ["login", "title"])
+    parts = key.split('.')
+    value = translations
+    
+    # Traverse the nested dictionaries
+    for part in parts:
+        if isinstance(value, dict) and part in value:
+            value = value[part]
+        else:
+            return default or key
+    
+    # Format string with provided kwargs if any
+    if isinstance(value, str) and kwargs:
+        try:
+            return value.format(**kwargs)
+        except KeyError:
+            return value
+    
+    return value
+
+# Set up language before each request
+@app.before_request
+def before_request():
+    g.get_text = get_text
+    
+    # Set language from query parameter or from session
+    if request.args.get('lang') and request.args.get('lang') in app.config['LANGUAGES']:
+        session['lang'] = request.args.get('lang')
+    elif 'lang' not in session:
+        session['lang'] = app.config['DEFAULT_LANGUAGE']
+    
+    g.languages = app.config['LANGUAGES']
+    g.current_lang = session.get('lang', app.config['DEFAULT_LANGUAGE'])
+
+# Add translate function to templates
+@app.context_processor
+def inject_template_scope():
+    return dict(t=get_text)
+
+# Route to change language
+@app.route('/change_language/<lang>')
+def change_language(lang):
+    if lang in app.config['LANGUAGES']:
+        session['lang'] = lang
+    return redirect(request.referrer or url_for('index'))
 
 db = SQLAlchemy(app)
 
@@ -52,21 +118,21 @@ def register():
         email = request.form['email']
         password = request.form['password']
         
-        # Sprawdzenie, czy użytkownik już istnieje
+        # Check if user already exists
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash('Nazwa użytkownika jest już zajęta', 'error')
+            flash(get_text('register.username_taken'), 'error')
             return redirect(url_for('register'))
         
-        # Hashowanie hasła
+        # Hash password
         hashed_password = generate_password_hash(password)
         
-        # Utworzenie nowego użytkownika
+        # Create new user
         new_user = User(username=username, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
         
-        flash('Rejestracja zakończona sukcesem', 'success')
+        flash(get_text('register.success'), 'success')
         return redirect(url_for('login'))
     
     return render_template('register.html')
@@ -83,23 +149,23 @@ def login():
         if user and check_password_hash(user.password, password):
             session.permanent = bool(remember)
             session['user_id'] = user.id
-            flash('Logowanie zakończone sukcesem', 'success')
+            flash(get_text('login.success'), 'success')
             return redirect(url_for('dashboard'))
         else:
-            flash('Nieprawidłowe dane logowania', 'error')
+            flash(get_text('login.invalid'), 'error')
     
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
-    flash('Zostałeś wylogowany', 'success')
+    flash(get_text('navigation.logout'), 'success')
     return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
-        flash('Musisz być zalogowany', 'error')
+        flash(get_text('errors.must_login'), 'error')
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
@@ -109,7 +175,7 @@ def dashboard():
 @app.route('/add_bookmark', methods=['GET', 'POST'])
 def add_bookmark():
     if 'user_id' not in session:
-        flash('Musisz być zalogowany', 'error')
+        flash(get_text('errors.must_login'), 'error')
         return redirect(url_for('login'))
     
     if request.method == 'POST':
@@ -128,7 +194,7 @@ def add_bookmark():
         db.session.add(new_bookmark)
         db.session.commit()
         
-        flash('Zakładka dodana pomyślnie', 'success')
+        flash(get_text('add_bookmark.success'), 'success')
         return redirect(url_for('dashboard'))
     
     return render_template('add_bookmark.html')
@@ -136,24 +202,24 @@ def add_bookmark():
 @app.route('/delete_bookmark/<int:bookmark_id>', methods=['POST'])
 def delete_bookmark(bookmark_id):
     if 'user_id' not in session:
-        flash('Musisz być zalogowany', 'error')
+        flash(get_text('errors.must_login'), 'error')
         return redirect(url_for('login'))
     
     bookmark = Bookmark.query.get_or_404(bookmark_id)
     
     if bookmark.user_id != session['user_id']:
-        flash('Nie masz uprawnień', 'error')
+        flash(get_text('errors.no_permission'), 'error')
         return redirect(url_for('dashboard'))
     
     db.session.delete(bookmark)
     db.session.commit()
     
-    # Jeśli to żądanie AJAX, zwróć JSON zamiast przekierowania
+    # If it's an AJAX request, return JSON instead of redirection
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return {'success': True, 'message': 'Zakładka usunięta'}
+        return {'success': True, 'message': get_text('bookmarks.delete_success')}
     
-    # Dla tradycyjnego żądania - przekierowanie
-    flash('Zakładka usunięta', 'success')
+    # For traditional request - redirect
+    flash(get_text('bookmarks.delete_success'), 'success')
     return redirect(url_for('dashboard'))
 
 def get_page_title(url):
@@ -208,29 +274,29 @@ def fetch_and_save_favicon(url, bookmark_id):
                     f.write(favicon_response.content)
                 return favicon_filename
         except Exception as e:
-            print(f"Błąd pobierania favicon: {e}")
+            print(f"Error get favicon: {e}")
         
         return None
     except Exception as e:
-        print(f"Błąd ogólny favicon: {e}")
+        print(f"Error favicon: {e}")
         return None
 
 @app.route('/import_bookmarks', methods=['GET', 'POST'])
 def import_bookmarks():
     if 'user_id' not in session:
-        flash('Musisz być zalogowany', 'error')
+        flash(get_text('errors.must_login'), 'error')
         return redirect(url_for('login'))
     
     if request.method == 'POST':
-        # Obsługa importu zakładek z pliku HTML Firefox
+        # Handle import from Firefox HTML file
         if 'bookmarks_file' not in request.files:
-            flash('Nie wybrano pliku', 'error')
+            flash(get_text('import_bookmarks.no_file'), 'error')
             return redirect(request.url)
         
         file = request.files['bookmarks_file']
         
         if file.filename == '':
-            flash('Nie wybrano pliku', 'error')
+            flash(get_text('import_bookmarks.no_file'), 'error')
             return redirect(request.url)
         
         if file:
@@ -255,7 +321,7 @@ def import_bookmarks():
                     new_bookmark = Bookmark(
                         title=title, 
                         url=url, 
-                        description='Zaimportowana zakładka',
+                        description=get_text('bookmarks.imported_description'),
                         user_id=session['user_id'],
                         created_at=datetime.fromtimestamp(int(added)) if added else datetime.utcnow() 
                     )
@@ -264,24 +330,24 @@ def import_bookmarks():
                     imported_count += 1
                 except Exception as e:
                     # Logowanie błędów bez przerywania importu
-                    print(f"Błąd importu zakładki: {e}")
+                    print(f"Error import bookmark: {e}")
             
             db.session.commit()
             
-            flash(f'Zaimportowano {imported_count} zakładek', 'success')
+            flash(get_text('import_bookmarks.bookmark_count', count=imported_count), 'success')
             return redirect(url_for('dashboard'))
     
     return render_template('import_bookmarks.html')
 
 @app.route('/get_page_title', methods=['POST'])
 def fetch_page_title():
-    """Endpoint do automatycznego pobierania tytułu strony"""
+    """Endpoint for automatically fetching page title"""
     if 'user_id' not in session:
-        return {'error': 'Nie jesteś zalogowany'}, 403
+        return {'error': get_text('errors.not_logged_in')}, 403
     
     url = request.form.get('url')
     if not url:
-        return {'error': 'Nie podano URL'}, 400
+        return {'error': get_text('errors.no_url')}, 400
     
     try:
         title = get_page_title(url)
@@ -291,16 +357,16 @@ def fetch_page_title():
 
 @app.route('/open/<int:bookmark_id>')
 def open_bookmark(bookmark_id):
-    """Przekierowanie na stronę i pobranie favicon"""
+    """Redirect to page and fetch favicon"""
     if 'user_id' not in session:
-        flash('Musisz być zalogowany', 'error')
+        flash(get_text('errors.must_login'), 'error')
         return redirect(url_for('login'))
     
     bookmark = Bookmark.query.get_or_404(bookmark_id)
     
-    # Sprawdzenie czy zakładka należy do zalogowanego użytkownika
+    # Check if bookmark belongs to logged in user
     if bookmark.user_id != session['user_id']:
-        flash('Nie masz uprawnień', 'error')
+        flash(get_text('errors.no_permission'), 'error')
         return redirect(url_for('dashboard'))
     
     # Pobieranie favicon, jeśli jeszcze nie istnieje

@@ -17,3 +17,7 @@ python app.py dev
 # run in prod mode
 python app.py
 ```
+
+i18n  
+to add new translation: add in lang/xx.json then in app.py add:  
+app.config['LANGUAGES'] = ['en', 'pl', "de", "xx"]

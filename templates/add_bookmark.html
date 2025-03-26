@@ -1,12 +1,12 @@
 <!-- templates/add_bookmark.html -->
 {% extends "base.html" %}
 {% block content %}
-<h1 style="text-align: center;">Dodaj nową zakładkę</h1>
+<h1 style="text-align: center;">{{ t('add_bookmark.title') }}</h1>
 <form id="bookmarkForm" method="POST">
-    <input type="text" id="titleInput" name="title" placeholder="Tytuł" required>
-    <input type="url" id="urlInput" name="url" placeholder="URL" required>
-    <textarea name="description" placeholder="Opis (opcjonalnie)"></textarea>
-    <input type="submit" value="Dodaj zakładkę">
+    <input type="text" id="titleInput" name="title" placeholder="{{ t('add_bookmark.bookmark_title') }}" required>
+    <input type="url" id="urlInput" name="url" placeholder="{{ t('add_bookmark.url') }}" required>
+    <textarea name="description" placeholder="{{ t('add_bookmark.description') }}"></textarea>
+    <input type="submit" value="{{ t('add_bookmark.button') }}">
 </form>
 
 <script>

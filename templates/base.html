@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="{{ g.current_lang }}">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
-    <title>{% block title %}Menedżer Zakładek{% endblock %}</title>
+    <title>{% block title %}{{ t('app_name') }}{% endblock %}</title>
     <style>
         :root {
             --bg-color: #f6f6f6;
@@ -34,6 +34,7 @@
         .navbar {
             display: flex;
             justify-content: space-between;
+            /* justify-content: flex-end; */
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 10px;
@@ -108,25 +109,56 @@
         a.btn:hover {
             opacity: 0.9;
         }
+        /* Language selector */
+        /* .language-selector {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+        } */
+        .language-selector select {
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background-color: white;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         {% if 'user_id' in session %}
-            <a href="{{ url_for('dashboard') }}">Zakładki</a>
+            <a href="{{ url_for('dashboard') }}">{{ t('navigation.bookmarks') }}</a>
             <div>
-                <a href="{{ url_for('add_bookmark') }}">+ Dodaj</a>
-                <a href="{{ url_for('import_bookmarks') }}">Import</a>
-                <a href="{{ url_for('logout') }}">Wyloguj</a>
+                <a href="{{ url_for('add_bookmark') }}">{{ t('navigation.add') }}</a>
+                <a href="{{ url_for('import_bookmarks') }}">{{ t('navigation.import') }}</a>
+                <a href="{{ url_for('logout') }}">{{ t('navigation.logout') }}</a>
             </div>
         {% else %}
-            <a href="{{ url_for('index') }}">Strona Główna</a>
+            <a href="{{ url_for('index') }}">{{ t('navigation.home') }}</a>
             <div>
-                <a href="{{ url_for('login') }}">Zaloguj</a>
-                <a href="{{ url_for('register') }}">Zarejestruj</a>
+                <a href="{{ url_for('login') }}">{{ t('navigation.login') }}</a>
+                <a href="{{ url_for('register') }}">{{ t('navigation.register') }}</a>
             </div>
         {% endif %}
+
+        <!-- Language selector -->
+        <div class="language-selector">
+            <select id="languageSelect" onchange="changeLanguage(this.value)">
+                {% for lang in g.languages %}
+                    <option value="{{ lang }}" {% if g.current_lang == lang %}selected{% endif %}>
+                        {{ t('language.' + lang) }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
     </nav>
+    
+    <script>
+        function changeLanguage(lang) {
+            window.location.href = "{{ url_for('change_language', lang='_lang_') }}".replace('_lang_', lang);
+        }
+    </script>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

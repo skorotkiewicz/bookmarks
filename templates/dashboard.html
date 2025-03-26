@@ -135,14 +135,14 @@
 </style>
 
 <div class="search-container">
-    <button id="search-toggle" class="search-btn" title="Wyszukaj zakładki">
+    <button id="search-toggle" class="search-btn" title="{{ t('dashboard.search_title') }}">
         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
     </button>
-    <input type="text" id="search-input" class="search-input" placeholder="Wyszukaj zakładki..." autocomplete="off">
-    <button id="search-clear" class="search-clear" title="Wyczyść wyszukiwanie">✕</button>
+    <input type="text" id="search-input" class="search-input" placeholder="{{ t('dashboard.search_placeholder') }}" autocomplete="off">
+    <button id="search-clear" class="search-clear" title="{{ t('dashboard.clear_search') }}">✕</button>
 </div>
 
 <div class="bookmarks">
@@ -163,18 +163,18 @@
                 {% endif %}
             </div>
             <form class="delete-form" data-bookmark-id="{{ bookmark.id }}" data-index="{{ loop.index }}" method="POST" action="{{ url_for('delete_bookmark', bookmark_id=bookmark.id) }}" style="margin: 0;">
-                <button type="submit" class="delete-btn">✕</button>
+                <button type="submit" class="delete-btn">{{ t('bookmarks.delete_button') }}</button>
             </form>
         </div>
         {% endfor %}
     {% else %}
         <div class="empty-state" id="empty-state">
-            <p>Brak zakładek</p>
-            <a href="{{ url_for('add_bookmark') }}" class="btn" style="margin-top: 10px;">Dodaj pierwszą zakładkę</a>
+            <p>{{ t('dashboard.no_bookmarks') }}</p>
+            <a href="{{ url_for('add_bookmark') }}" class="btn" style="margin-top: 10px;">{{ t('dashboard.add_first') }}</a>
         </div>
     {% endif %}
     <div id="no-results" class="no-results">
-        <p>Brak wyników wyszukiwania</p>
+        <p>{{ t('dashboard.no_results') }}</p>
     </div>
 </div>
 

@@ -1,0 +1,80 @@
+{
+  "app_name": "Lesezeichen-Manager",
+  "navigation": {
+    "bookmarks": "Lesezeichen",
+    "add": "+ Hinzufügen",
+    "import": "Importieren",
+    "logout": "Abmelden",
+    "home": "Startseite",
+    "login": "Anmelden",
+    "register": "Registrieren"
+  },
+  "index": {
+    "welcome": "Willkommen beim Lesezeichen-Manager",
+    "intro": "Melde dich an oder registriere dich, um deine Lesezeichen zu verwalten."
+  },
+  "login": {
+    "title": "Anmeldung",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "remember_me": "Angemeldet bleiben (90 Tage)",
+    "button": "Anmelden",
+    "success": "Erfolgreich angemeldet",
+    "invalid": "Ungültige Anmeldedaten"
+  },
+  "register": {
+    "title": "Registrierung",
+    "username": "Benutzername",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "button": "Registrieren",
+    "success": "Erfolgreich registriert",
+    "username_taken": "Benutzername ist bereits vergeben"
+  },
+  "dashboard": {
+    "search_placeholder": "Lesezeichen durchsuchen...",
+    "search_title": "Lesezeichen suchen",
+    "clear_search": "Suche löschen",
+    "no_bookmarks": "Keine Lesezeichen vorhanden",
+    "add_first": "Füge dein erstes Lesezeichen hinzu",
+    "no_results": "Keine Suchergebnisse"
+  },
+  "add_bookmark": {
+    "title": "Neues Lesezeichen hinzufügen",
+    "bookmark_title": "Titel",
+    "url": "URL",
+    "description": "Beschreibung (optional)",
+    "button": "Lesezeichen hinzufügen",
+    "success": "Lesezeichen erfolgreich hinzugefügt"
+  },
+  "import_bookmarks": {
+    "title": "Lesezeichen importieren",
+    "firefox_title": "Import aus Firefox",
+    "firefox_instructions": "So exportierst du Lesezeichen aus Firefox:",
+    "firefox_step1": "Öffne den Lesezeichen-Manager (Strg+Shift+O)",
+    "firefox_step2": "Klicke auf \"Importieren und Sichern\"",
+    "firefox_step3": "Wähle \"Lesezeichen als HTML exportieren\"",
+    "firefox_step4": "Speichere die Datei",
+    "button": "Lesezeichen importieren",
+    "no_file": "Keine Datei ausgewählt",
+    "bookmark_count": "{count} Lesezeichen importiert",
+    "bookmarklet_title": "Bookmarklet",
+    "bookmarklet_desc": "Füge dieses Skript als Lesezeichen in deinem Browser hinzu:"
+  },
+  "bookmarks": {
+    "delete_success": "Lesezeichen gelöscht",
+    "delete_button": "✕",
+    "imported_description": "Importiertes Lesezeichen"
+  },
+  "errors": {
+    "must_login": "Du musst angemeldet sein",
+    "no_permission": "Keine Berechtigung",
+    "no_url": "Keine URL angegeben",
+    "not_logged_in": "Du bist nicht angemeldet"
+  },
+  "language": {
+    "en": "English",
+    "pl": "Polski",
+    "de": "Deutsch"
+  }
+}

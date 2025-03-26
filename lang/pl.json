@@ -1,0 +1,80 @@
+{
+  "app_name": "Menedżer Zakładek",
+  "navigation": {
+    "bookmarks": "Zakładki",
+    "add": "+ Dodaj",
+    "import": "Import",
+    "logout": "Wyloguj",
+    "home": "Strona Główna",
+    "login": "Zaloguj",
+    "register": "Zarejestruj"
+  },
+  "index": {
+    "welcome": "Witaj w Menedżerze Zakładek",
+    "intro": "Zaloguj się lub zarejestruj, aby zarządzać swoimi zakładkami."
+  },
+  "login": {
+    "title": "Logowanie",
+    "username": "Nazwa użytkownika",
+    "password": "Hasło",
+    "remember_me": "Zapamiętaj mnie (90 dni)",
+    "button": "Zaloguj",
+    "success": "Logowanie zakończone sukcesem",
+    "invalid": "Nieprawidłowe dane logowania"
+  },
+  "register": {
+    "title": "Rejestracja",
+    "username": "Nazwa użytkownika",
+    "email": "E-mail",
+    "password": "Hasło",
+    "button": "Zarejestruj",
+    "success": "Rejestracja zakończona sukcesem",
+    "username_taken": "Nazwa użytkownika jest już zajęta"
+  },
+  "dashboard": {
+    "search_placeholder": "Wyszukaj zakładki...",
+    "search_title": "Wyszukaj zakładki",
+    "clear_search": "Wyczyść wyszukiwanie",
+    "no_bookmarks": "Brak zakładek",
+    "add_first": "Dodaj pierwszą zakładkę",
+    "no_results": "Brak wyników wyszukiwania"
+  },
+  "add_bookmark": {
+    "title": "Dodaj nową zakładkę",
+    "bookmark_title": "Tytuł",
+    "url": "URL",
+    "description": "Opis (opcjonalnie)",
+    "button": "Dodaj zakładkę",
+    "success": "Zakładka dodana pomyślnie"
+  },
+  "import_bookmarks": {
+    "title": "Import zakładek",
+    "firefox_title": "Import z przeglądarki Firefox",
+    "firefox_instructions": "Jak wyeksportować zakładki z Firefox:",
+    "firefox_step1": "Otwórz Menedżera Zakładek (Ctrl+Shift+O)",
+    "firefox_step2": "Kliknij \"Importuj i kopie zapasowe\"",
+    "firefox_step3": "Wybierz \"Eksportuj zakładki do pliku HTML\"",
+    "firefox_step4": "Zapisz plik",
+    "button": "Importuj zakładki",
+    "no_file": "Nie wybrano pliku",
+    "bookmark_count": "Zaimportowano {count} zakładek",
+    "bookmarklet_title": "Skrypt zakładkowy",
+    "bookmarklet_desc": "Dodaj ten skrypt do zakładek w przeglądarce:"
+  },
+  "bookmarks": {
+    "delete_success": "Zakładka usunięta",
+    "delete_button": "✕",
+    "imported_description": "Zaimportowana zakładka"
+  },
+  "errors": {
+    "must_login": "Musisz być zalogowany",
+    "no_permission": "Nie masz uprawnień",
+    "no_url": "Nie podano URL",
+    "not_logged_in": "Nie jesteś zalogowany"
+  },
+  "language": {
+    "en": "English",
+    "pl": "Polski",
+    "de": "Deutsch"
+  }
+}

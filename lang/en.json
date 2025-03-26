@@ -1,0 +1,80 @@
+{
+  "app_name": "Bookmark Manager",
+  "navigation": {
+    "bookmarks": "Bookmarks",
+    "add": "+ Add",
+    "import": "Import",
+    "logout": "Logout",
+    "home": "Home",
+    "login": "Login",
+    "register": "Register"
+  },
+  "index": {
+    "welcome": "Welcome to Bookmark Manager",
+    "intro": "Login or register to manage your bookmarks."
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "remember_me": "Remember me (90 days)",
+    "button": "Login",
+    "success": "Login successful",
+    "invalid": "Invalid login credentials"
+  },
+  "register": {
+    "title": "Register",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "button": "Register",
+    "success": "Registration successful",
+    "username_taken": "Username is already taken"
+  },
+  "dashboard": {
+    "search_placeholder": "Search bookmarks...",
+    "search_title": "Search bookmarks",
+    "clear_search": "Clear search",
+    "no_bookmarks": "No bookmarks",
+    "add_first": "Add your first bookmark",
+    "no_results": "No search results"
+  },
+  "add_bookmark": {
+    "title": "Add new bookmark",
+    "bookmark_title": "Title",
+    "url": "URL",
+    "description": "Description (optional)",
+    "button": "Add bookmark",
+    "success": "Bookmark added successfully"
+  },
+  "import_bookmarks": {
+    "title": "Import bookmarks",
+    "firefox_title": "Import from Firefox browser",
+    "firefox_instructions": "How to export bookmarks from Firefox:",
+    "firefox_step1": "Open Bookmark Manager (Ctrl+Shift+O)",
+    "firefox_step2": "Click \"Import and Backup\"",
+    "firefox_step3": "Select \"Export Bookmarks to HTML\"",
+    "firefox_step4": "Save the file",
+    "button": "Import bookmarks",
+    "no_file": "No file selected",
+    "bookmark_count": "Imported {count} bookmarks",
+    "bookmarklet_title": "Bookmarklet",
+    "bookmarklet_desc": "Add this script to your browser bookmarks:"
+  },
+  "bookmarks": {
+    "delete_success": "Bookmark deleted",
+    "delete_button": "✕",
+    "imported_description": "Imported bookmark"
+  },
+  "errors": {
+    "must_login": "You must be logged in",
+    "no_permission": "You don't have permission",
+    "no_url": "No URL provided",
+    "not_logged_in": "You are not logged in"
+  },
+  "language": {
+    "en": "English",
+    "pl": "Polski",
+    "de": "Deutsch"
+  }
+}
