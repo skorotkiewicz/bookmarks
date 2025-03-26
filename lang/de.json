@@ -4,6 +4,7 @@
     "bookmarks": "Lesezeichen",
     "add": "+ Hinzufügen",
     "import": "Importieren",
+    "tools": "Werkzeuge",
     "logout": "Abmelden",
     "home": "Startseite",
     "login": "Anmelden",
@@ -80,5 +81,23 @@
     "en": "English",
     "pl": "Polski",
     "de": "Deutsch"
+  },
+  "tools": {
+    "title": "Werkzeuge",
+    "find_duplicates": "Doppelte Lesezeichen finden",
+    "duplicates_description": "Finde und entferne Lesezeichen-Duplikate mit derselben URL",
+    "find_duplicates_button": "Duplikate suchen",
+    "duplicates_found": "Doppelte Lesezeichen gefunden",
+    "no_duplicates_found": "Keine doppelten Lesezeichen gefunden!",
+    "remove_duplicates": "Duplikate entfernen",
+    "cancel": "Abbrechen",
+    "loading": "Suche...",
+    "error_finding_duplicates": "Fehler beim Suchen von Duplikaten",
+    "confirm_remove_duplicates": "Bist du sicher, dass du die nicht markierten doppelten Lesezeichen entfernen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "duplicates_removed_success": "Doppelte Lesezeichen wurden erfolgreich entfernt!",
+    "error_removing_duplicates": "Fehler beim Entfernen von Duplikaten",
+    "no_bookmarks_selected": "Keine Lesezeichen zum Behalten ausgewählt",
+    "duplicate_group": "Gruppe",
+    "keep_at_least_one": "Du musst mindestens ein Lesezeichen aus jeder Gruppe behalten!"
   }
 }

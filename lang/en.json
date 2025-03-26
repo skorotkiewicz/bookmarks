@@ -4,6 +4,7 @@
     "bookmarks": "Bookmarks",
     "add": "+ Add",
     "import": "Import",
+    "tools": "Tools",
     "logout": "Logout",
     "home": "Home",
     "login": "Login",
@@ -80,5 +81,23 @@
     "en": "English",
     "pl": "Polski",
     "de": "Deutsch"
+  },
+  "tools": {
+    "title": "Tools",
+    "find_duplicates": "Find Duplicate Bookmarks",
+    "duplicates_description": "Find and remove bookmark duplicates with the same URL",
+    "find_duplicates_button": "Find Duplicates",
+    "duplicates_found": "Duplicate Bookmarks Found",
+    "no_duplicates_found": "No duplicate bookmarks found!",
+    "remove_duplicates": "Remove Duplicates",
+    "cancel": "Cancel",
+    "loading": "Searching...",
+    "error_finding_duplicates": "Error finding duplicates",
+    "confirm_remove_duplicates": "Are you sure you want to remove the unchecked duplicate bookmarks? This action cannot be undone.",
+    "duplicates_removed_success": "Duplicate bookmarks have been removed successfully!",
+    "error_removing_duplicates": "Error removing duplicates",
+    "no_bookmarks_selected": "No bookmarks selected to keep",
+    "duplicate_group": "Group",
+    "keep_at_least_one": "You must keep at least one bookmark from each group!"
   }
 }

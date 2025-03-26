@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ t('tools.title') }} - {{ t('app_name') }}{% endblock %}
+
+{% block content %}
+<h1>{{ t('tools.title') }}</h1>
+
+<div class="tools-container">
+    <div class="tool-card">
+        <h2>{{ t('tools.find_duplicates') }}</h2>
+        <p>{{ t('tools.duplicates_description') }}</p>
+        <button id="findDuplicatesBtn" class="btn">{{ t('tools.find_duplicates_button') }}</button>
+    </div>
+</div>
+
+<div id="resultsContainer" class="results-container" style="display: none;">
+    <h2>{{ t('tools.duplicates_found') }}</h2>
+    <div id="duplicatesList" class="duplicates-list"></div>
+    <button id="removeDuplicatesBtn" class="btn danger-btn">{{ t('tools.remove_duplicates') }}</button>
+    <button id="cancelBtn" class="btn cancel-btn">{{ t('tools.cancel') }}</button>
+</div>
+
+<style>
+    .tools-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .tool-card {
+        background-color: white;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        padding: 20px;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .tool-card h2 {
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+
+    .tool-card p {
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .btn {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+    }
+
+    .danger-btn {
+        background-color: #dc3545;
+    }
+
+    .cancel-btn {
+        background-color: #6c757d;
+        margin-left: 10px;
+    }
+
+    .results-container {
+        margin-top: 30px;
+        background-color: white;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        padding: 20px;
+    }
+
+    .duplicates-list {
+        margin: 15px 0;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .duplicate-group {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+    }
+
+    .duplicate-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .duplicate-item:last-child {
+        border-bottom: none;
+    }
+
+    .duplicate-favicon {
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+    }
+
+    .duplicate-title {
+        flex-grow: 1;
+    }
+
+    .duplicate-date {
+        color: #999;
+        font-size: 12px;
+        margin-left: 10px;
+    }
+
+    .duplicate-keep {
+        margin-left: 10px;
+        width: 20px;
+        height: 20px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const findDuplicatesBtn = document.getElementById('findDuplicatesBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const duplicatesList = document.getElementById('duplicatesList');
+        const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        findDuplicatesBtn.addEventListener('click', function() {
+            // Show loading state
+            findDuplicatesBtn.disabled = true;
+            findDuplicatesBtn.textContent = '{{ t('tools.loading') }}';
+
+            // Fetch duplicates from the server
+            fetch('/find_duplicates')
+                .then(response => response.json())
+                .then(data => {
+                    findDuplicatesBtn.disabled = false;
+                    findDuplicatesBtn.textContent = '{{ t('tools.find_duplicates_button') }}';
+                    
+                    if (data.duplicates.length === 0) {
+                        alert('{{ t('tools.no_duplicates_found') }}');
+                        return;
+                    }
+
+                    // Display duplicates
+                    displayDuplicates(data.duplicates);
+                    resultsContainer.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    findDuplicatesBtn.disabled = false;
+                    findDuplicatesBtn.textContent = '{{ t('tools.find_duplicates_button') }}';
+                    alert('{{ t('tools.error_finding_duplicates') }}');
+                });
+        });
+
+        removeDuplicatesBtn.addEventListener('click', function() {
+            if (!confirm('{{ t('tools.confirm_remove_duplicates') }}')) {
+                return;
+            }
+
+            // Collect IDs of bookmarks to keep (checked ones)
+            const bookmarksToKeep = [];
+            document.querySelectorAll('.duplicate-keep:checked').forEach(checkbox => {
+                bookmarksToKeep.push(parseInt(checkbox.value));
+            });
+
+            // Send request to remove duplicates
+            fetch('/remove_duplicates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ keep_ids: bookmarksToKeep }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('{{ t('tools.duplicates_removed_success') }}');
+                        resultsContainer.style.display = 'none';
+                        duplicatesList.innerHTML = '';
+                    } else {
+                        alert('{{ t('tools.error_removing_duplicates') }}');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('{{ t('tools.error_removing_duplicates') }}');
+                });
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            resultsContainer.style.display = 'none';
+            duplicatesList.innerHTML = '';
+        });
+
+        function displayDuplicates(duplicateGroups) {
+            duplicatesList.innerHTML = '';
+
+            duplicateGroups.forEach((group, groupIndex) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'duplicate-group';
+                
+                // Create a header for the group
+                const groupHeader = document.createElement('h3');
+                groupHeader.textContent = `{{ t('tools.duplicate_group') }} ${groupIndex + 1}: ${group[0].url}`;
+                groupDiv.appendChild(groupHeader);
+
+                // Create items for each duplicate
+                group.forEach(bookmark => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'duplicate-item';
+
+                    // Favicon
+                    const favicon = document.createElement('img');
+                    favicon.className = 'duplicate-favicon';
+                    favicon.src = bookmark.favicon_url || '/static/blank.png';
+                    itemDiv.appendChild(favicon);
+
+                    // Title
+                    const title = document.createElement('span');
+                    title.className = 'duplicate-title';
+                    title.textContent = bookmark.title;
+                    itemDiv.appendChild(title);
+
+                    // Date
+                    const date = document.createElement('span');
+                    date.className = 'duplicate-date';
+                    date.textContent = new Date(bookmark.created_at).toLocaleDateString();
+                    itemDiv.appendChild(date);
+
+                    // Checkbox to keep this bookmark
+                    const keepCheckbox = document.createElement('input');
+                    keepCheckbox.className = 'duplicate-keep';
+                    keepCheckbox.type = 'checkbox';
+                    keepCheckbox.value = bookmark.id;
+                    keepCheckbox.name = `keep_${groupIndex}`;
+                    
+                    // For each group, check the first bookmark by default
+                    if (group.indexOf(bookmark) === 0) {
+                        keepCheckbox.checked = true;
+                    }
+                    
+                    keepCheckbox.addEventListener('change', function() {
+                        // Ensure at least one bookmark is selected in each group
+                        const checkboxes = document.querySelectorAll(`input[name="keep_${groupIndex}"]:checked`);
+                        if (checkboxes.length === 0) {
+                            this.checked = true;
+                            alert('{{ t('tools.keep_at_least_one') }}');
+                        }
+                    });
+                    
+                    itemDiv.appendChild(keepCheckbox);
+
+                    groupDiv.appendChild(itemDiv);
+                });
+
+                duplicatesList.appendChild(groupDiv);
+            });
+        }
+    });
+</script>
+{% endblock %}

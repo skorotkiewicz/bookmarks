@@ -435,6 +435,104 @@ def open_bookmark(bookmark_id):
     # Przekierowanie na stronę
     return redirect(bookmark.url)
 
+@app.route('/tools')
+def tools():
+    """Tools page for bookmark management"""
+    if 'user_id' not in session:
+        flash(get_text('errors.must_login'), 'error')
+        return redirect(url_for('login'))
+    
+    return render_template('tools.html')
+
+@app.route('/find_duplicates')
+def find_duplicates():
+    """Find duplicate bookmarks by URL"""
+    if 'user_id' not in session:
+        return {'error': get_text('errors.not_logged_in')}, 403
+    
+    # Get user's bookmarks
+    bookmarks = Bookmark.query.filter_by(user_id=session['user_id']).all()
+    
+    # Group bookmarks by URL
+    url_groups = {}
+    for bookmark in bookmarks:
+        normalized_url = bookmark.url.strip().lower()
+        if normalized_url not in url_groups:
+            url_groups[normalized_url] = []
+        url_groups[normalized_url].append(bookmark)
+    
+    # Find groups with duplicates (more than 1 bookmark with same URL)
+    duplicate_groups = []
+    for url, group in url_groups.items():
+        if len(group) > 1:
+            # Convert bookmark objects to dictionaries for JSON serialization
+            bookmarks_data = []
+            for bookmark in group:
+                bookmarks_data.append({
+                    'id': bookmark.id,
+                    'title': bookmark.title,
+                    'url': bookmark.url,
+                    'created_at': bookmark.created_at.isoformat() if bookmark.created_at else None,
+                    'favicon_url': bookmark.get_favicon_url()
+                })
+            duplicate_groups.append(bookmarks_data)
+    
+    return {'duplicates': duplicate_groups}
+
+@app.route('/remove_duplicates', methods=['POST'])
+def remove_duplicates():
+    """Remove duplicate bookmarks, keeping selected ones"""
+    if 'user_id' not in session:
+        return {'error': get_text('errors.not_logged_in')}, 403
+    
+    # Get IDs of bookmarks to keep
+    data = request.get_json()
+    keep_ids = data.get('keep_ids', [])
+    
+    if not keep_ids:
+        return {'error': get_text('tools.no_bookmarks_selected')}, 400
+    
+    # Get all user's bookmarks
+    bookmarks = Bookmark.query.filter_by(user_id=session['user_id']).all()
+    
+    # Group bookmarks by URL
+    url_groups = {}
+    for bookmark in bookmarks:
+        normalized_url = bookmark.url.strip().lower()
+        if normalized_url not in url_groups:
+            url_groups[normalized_url] = []
+        url_groups[normalized_url].append(bookmark)
+    
+    # Count bookmarks to delete
+    bookmarks_to_delete = []
+    
+    # For each URL group with duplicates
+    for url, group in url_groups.items():
+        if len(group) > 1:
+            # Find bookmarks in this group that should be deleted (not in keep_ids)
+            for bookmark in group:
+                if bookmark.id not in keep_ids:
+                    bookmarks_to_delete.append(bookmark)
+    
+    # Delete the bookmarks
+    delete_count = 0
+    for bookmark in bookmarks_to_delete:
+        # Delete favicon file if it exists
+        if bookmark.favicon_path:
+            favicon_path = os.path.join(app.config['FAVICON_FOLDER'], bookmark.favicon_path)
+            if os.path.exists(favicon_path):
+                try:
+                    os.remove(favicon_path)
+                except Exception as e:
+                    print(f"Error removing favicon: {e}")
+        
+        db.session.delete(bookmark)
+        delete_count += 1
+    
+    db.session.commit()
+    
+    return {'success': True, 'deleted_count': delete_count}
+
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == 'dev':
         # dev

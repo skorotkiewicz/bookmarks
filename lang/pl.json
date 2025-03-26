@@ -4,6 +4,7 @@
     "bookmarks": "Zakładki",
     "add": "+ Dodaj",
     "import": "Import",
+    "tools": "Narzędzia",
     "logout": "Wyloguj",
     "home": "Strona Główna",
     "login": "Zaloguj",
@@ -80,5 +81,23 @@
     "en": "English",
     "pl": "Polski",
     "de": "Deutsch"
+  },
+  "tools": {
+    "title": "Narzędzia",
+    "find_duplicates": "Znajdź Duplikaty Zakładek",
+    "duplicates_description": "Znajdź i usuń duplikaty zakładek z tym samym URL",
+    "find_duplicates_button": "Znajdź Duplikaty",
+    "duplicates_found": "Znaleziono Duplikaty Zakładek",
+    "no_duplicates_found": "Nie znaleziono duplikatów zakładek!",
+    "remove_duplicates": "Usuń Duplikaty",
+    "cancel": "Anuluj",
+    "loading": "Szukanie...",
+    "error_finding_duplicates": "Błąd podczas szukania duplikatów",
+    "confirm_remove_duplicates": "Czy na pewno chcesz usunąć niezaznaczone duplikaty zakładek? Ta operacja nie może być cofnięta.",
+    "duplicates_removed_success": "Duplikaty zakładek zostały pomyślnie usunięte!",
+    "error_removing_duplicates": "Błąd podczas usuwania duplikatów",
+    "no_bookmarks_selected": "Nie wybrano zakładek do zachowania",
+    "duplicate_group": "Grupa",
+    "keep_at_least_one": "Musisz zachować co najmniej jedną zakładkę z każdej grupy!"
   }
 }
