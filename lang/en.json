@@ -38,7 +38,11 @@
     "clear_search": "Clear search",
     "no_bookmarks": "No bookmarks",
     "add_first": "Add your first bookmark",
-    "no_results": "No search results"
+    "no_results": "No search results",
+    "view_selector": {
+      "detailed": "Detailed view",
+      "tiles": "Tile view"
+    }
   },
   "add_bookmark": {
     "title": "Add new bookmark",

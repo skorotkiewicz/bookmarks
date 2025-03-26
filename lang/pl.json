@@ -38,7 +38,11 @@
     "clear_search": "Wyczyść wyszukiwanie",
     "no_bookmarks": "Brak zakładek",
     "add_first": "Dodaj pierwszą zakładkę",
-    "no_results": "Brak wyników wyszukiwania"
+    "no_results": "Brak wyników wyszukiwania",
+    "view_selector": {
+      "detailed": "Widok szczegółowy",
+      "tiles": "Widok kafelków"
+    }
   },
   "add_bookmark": {
     "title": "Dodaj nową zakładkę",

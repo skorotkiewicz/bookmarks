@@ -48,7 +48,7 @@
     margin-left: 10px;
     white-space: nowrap;
 }
-.bookmark-item:hover .bookmark-date {
+.bookmark-item:not(.tiles-view .bookmark-item):hover .bookmark-date {
     display: block;
 }
 .bookmark-url {
@@ -146,6 +146,88 @@
     color: #888;
     display: none;
 }
+.view-selector {
+    margin-left: 10px;
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+}
+.tiles-view .bookmark-item {
+    display: inline-block;
+    width: 100px;
+    height: 60px;
+    margin: 5px;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    vertical-align: top;
+    transition: background-color 0.3s;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+.tiles-view .bookmark-item:hover {
+    background-color: #dfdfdf;
+}
+.tiles-view .bookmark-item a.tile-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+.tiles-view .bookmark-item > .bookmark-favicon {
+    display: none;
+}
+.tiles-view .tile-link .bookmark-favicon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 5px;
+    flex-shrink: 0;
+}
+.tiles-view .bookmark-index {
+    display: none;
+}
+.tiles-view .bookmark-content {
+    display: none !important;
+}
+.tiles-view .bookmark-title-container {
+    display: none !important;
+}
+.tiles-view .bookmark-item > .bookmark-content .bookmark-title {
+    display: none !important;
+}
+.tiles-view .tile-link .bookmark-title {
+    display: block;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
+    font-size: 12px;
+    color: var(--text-color);
+}
+.tiles-view .bookmark-date,
+.tiles-view .bookmark-url,
+.tiles-view .bookmark-description,
+.tiles-view .delete-form {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+}
 </style>
 
 <div class="search-container">
@@ -157,6 +239,10 @@
     </button>
     <input type="text" id="search-input" class="search-input" placeholder="{{ t('dashboard.search_placeholder') }}" autocomplete="off">
     <button id="search-clear" class="search-clear" title="{{ t('dashboard.clear_search') }}">✕</button>
+    <select id="view-selector" class="view-selector">
+        <option value="list">{{ t('dashboard.view_selector.detailed') }}</option>
+        <option value="tiles">{{ t('dashboard.view_selector.tiles') }}</option>
+    </select>
 </div>
 
 <div class="bookmarks">
@@ -167,7 +253,7 @@
             <img src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon">
             <div class="bookmark-content">
                 <div class="bookmark-title-container">
-                    <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-title">
+                    <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-title" title="{{ bookmark.title }}">
                         {{ bookmark.title }}
                     </a>
                     <span class="bookmark-date">{{ bookmark.created_at.strftime('%d-%m-%Y, %H:%M') }}</span>
@@ -197,6 +283,104 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Obsługa przełączania widoku (lista/kafelki)
+    const viewSelector = document.getElementById('view-selector');
+    const bookmarksContainer = document.querySelector('.bookmarks');
+    
+    // Sprawdź, czy w localStorage jest zapisany preferowany widok
+    const savedView = localStorage.getItem('bookmarksView');
+    if (savedView) {
+        viewSelector.value = savedView;
+        if (savedView === 'tiles') {
+            bookmarksContainer.classList.add('tiles-view');
+        }
+    }
+    
+    // Obsługa zmiany widoku
+    viewSelector.addEventListener('change', function() {
+        const selectedView = this.value;
+        
+        if (selectedView === 'tiles') {
+            bookmarksContainer.classList.add('tiles-view');
+            // Dodaj klasy tile-link do linków w widoku kafelków
+            setupTileLinks(true);
+        } else {
+            bookmarksContainer.classList.remove('tiles-view');
+            // Usuń klasy tile-link
+            setupTileLinks(false);
+        }
+        
+        // Zapisz wybrany widok w localStorage
+        localStorage.setItem('bookmarksView', selectedView);
+    });
+    
+    // Funkcja dodająca lub usuwająca klasy tile-link
+    function setupTileLinks(isTileView) {
+        const bookmarkItems = document.querySelectorAll('.bookmark-item');
+        
+        bookmarkItems.forEach(item => {
+            // Ukryj description, date i inne elementy 
+            if (isTileView) {
+                const descriptionEl = item.querySelector('.bookmark-description');
+                const dateEl = item.querySelector('.bookmark-date');
+                const urlEl = item.querySelector('.bookmark-url');
+                
+                if (descriptionEl) descriptionEl.style.cssText = 'display:none!important; visibility:hidden!important; height:0!important; width:0!important; overflow:hidden!important; opacity:0!important;';
+                if (dateEl) dateEl.style.cssText = 'display:none!important; visibility:hidden!important; height:0!important; width:0!important; overflow:hidden!important; opacity:0!important;';
+                if (urlEl) urlEl.style.cssText = 'display:none!important; visibility:hidden!important; height:0!important; width:0!important; overflow:hidden!important; opacity:0!important;';
+            } else {
+                const descriptionEl = item.querySelector('.bookmark-description');
+                const dateEl = item.querySelector('.bookmark-date');
+                const urlEl = item.querySelector('.bookmark-url');
+                
+                if (descriptionEl) descriptionEl.style.cssText = '';
+                if (dateEl) dateEl.style.cssText = '';
+                if (urlEl) urlEl.style.cssText = '';
+            }
+            
+            const bookmarkId = item.id.replace('bookmark-', '');
+            const bookmarkLink = item.querySelector('.bookmark-title').getAttribute('href');
+            const favicon = item.querySelector('.bookmark-favicon').cloneNode(true);
+            const titleText = item.querySelector('.bookmark-title').textContent.trim();
+            
+            // Usuń istniejący tile-link jeśli istnieje
+            const existingTileLink = item.querySelector('.tile-link');
+            if (existingTileLink) {
+                existingTileLink.remove();
+            }
+            
+            if (isTileView) {
+                // Dodaj link obejmujący cały kafelek
+                const tileLink = document.createElement('a');
+                tileLink.href = bookmarkLink;
+                tileLink.className = 'tile-link';
+                tileLink.target = '_blank';
+                tileLink.rel = 'noopener';
+                
+                // Dodaj favicon i tytuł do linku (skrócony do max 10 znaków)
+                tileLink.appendChild(favicon);
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'bookmark-title';
+                
+                // Skróć tytuł do maksymalnie 10 znaków
+                let truncatedTitle = titleText.length > 10 ? 
+                    titleText.substring(0, 10) + '...' : 
+                    titleText;
+                    
+                titleSpan.textContent = truncatedTitle;
+                titleSpan.title = titleText; // Pełny tytuł pojawi się po najechaniu
+                tileLink.appendChild(titleSpan);
+                
+                item.appendChild(tileLink);
+            }
+        });
+    }
+    
+    // Zastosuj tile-link przy ładowaniu strony, jeśli jest to widok kafelków
+    if (savedView === 'tiles') {
+        setupTileLinks(true);
+    }
+    
     // Pobierz wszystkie formularze usuwania
     const deleteForms = document.querySelectorAll('.delete-form');
     
@@ -361,6 +545,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Aktualizuj numerację widocznych elementów
         updateVisibleIndexes();
+        
+        // Jeśli jesteśmy w widoku kafelków, odśwież tile-links dla widocznych elementów
+        const isInTileView = bookmarksContainer.classList.contains('tiles-view');
+        if (isInTileView) {
+            setupTileLinks(true);
+        }
     }
     
     // Funkcja aktualizująca numerację widocznych zakładek

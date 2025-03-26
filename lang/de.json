@@ -38,7 +38,11 @@
     "clear_search": "Suche löschen",
     "no_bookmarks": "Keine Lesezeichen vorhanden",
     "add_first": "Füge dein erstes Lesezeichen hinzu",
-    "no_results": "Keine Suchergebnisse"
+    "no_results": "Keine Suchergebnisse",
+    "view_selector": {
+      "detailed": "Detailansicht",
+      "tiles": "Kachelansicht"
+    }
   },
   "add_bookmark": {
     "title": "Neues Lesezeichen hinzufügen",
