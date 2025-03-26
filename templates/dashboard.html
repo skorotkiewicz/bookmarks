@@ -78,12 +78,77 @@
     from { opacity: 1; }
     to { opacity: 0; }
 }
+.search-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.search-btn {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+.search-btn:hover {
+    color: var(--accent-color);
+}
+.search-input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    margin-left: 8px;
+    margin-right: 8px;
+    transition: all 0.3s;
+    display: none;
+}
+.search-input.active {
+    display: block;
+}
+.search-icon {
+    width: 18px;
+    height: 18px;
+}
+.search-clear {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    display: none;
+    font-size: 16px;
+    padding: 8px;
+}
+.search-clear.active {
+    display: block;
+}
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    display: none;
+}
 </style>
+
+<div class="search-container">
+    <button id="search-toggle" class="search-btn" title="Wyszukaj zakładki">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+    </button>
+    <input type="text" id="search-input" class="search-input" placeholder="Wyszukaj zakładki..." autocomplete="off">
+    <button id="search-clear" class="search-clear" title="Wyczyść wyszukiwanie">✕</button>
+</div>
 
 <div class="bookmarks">
     {% if user.bookmarks %}
         {% for bookmark in user.bookmarks %}
-        <div class="bookmark-item" id="bookmark-{{ bookmark.id }}">
+        <div class="bookmark-item" id="bookmark-{{ bookmark.id }}" data-title="{{ bookmark.title | lower }}" data-url="{{ bookmark.url | lower }}">
             <div class="bookmark-index">{{ loop.index }}.</div>
             <img src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon">
             <div class="bookmark-content">
@@ -108,6 +173,9 @@
             <a href="{{ url_for('add_bookmark') }}" class="btn" style="margin-top: 10px;">Dodaj pierwszą zakładkę</a>
         </div>
     {% endif %}
+    <div id="no-results" class="no-results">
+        <p>Brak wyników wyszukiwania</p>
+    </div>
 </div>
 
 <script>
@@ -164,30 +232,135 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funkcja sprawdzająca, czy lista jest pusta
     function checkIfEmpty() {
-        const bookmarkItems = document.querySelectorAll('.bookmark-item');
+        const bookmarkItems = document.querySelectorAll('.bookmark-item:not(.hidden)');
         const emptyState = document.getElementById('empty-state');
         const bookmarksContainer = document.querySelector('.bookmarks');
+        const noResults = document.getElementById('no-results');
         
-        if (bookmarkItems.length === 0 && !emptyState) {
-            // Utwórz i dodaj komunikat o pustej liście
-            const emptyStateDiv = document.createElement('div');
-            emptyStateDiv.className = 'empty-state';
-            emptyStateDiv.id = 'empty-state';
-            
-            const emptyText = document.createElement('p');
-            emptyText.textContent = 'Brak zakładek';
-            
-            const addLink = document.createElement('a');
-            addLink.href = '{{ url_for("add_bookmark") }}';
-            addLink.className = 'btn';
-            addLink.style.marginTop = '10px';
-            addLink.textContent = 'Dodaj pierwszą zakładkę';
-            
-            emptyStateDiv.appendChild(emptyText);
-            emptyStateDiv.appendChild(addLink);
-            bookmarksContainer.appendChild(emptyStateDiv);
+        // Sprawdź, czy jest to wynik wyszukiwania
+        const searchInput = document.getElementById('search-input');
+        const isSearching = searchInput && searchInput.value.trim().length > 0;
+        
+        if (bookmarkItems.length === 0) {
+            if (isSearching) {
+                // Pokaż komunikat o braku wyników wyszukiwania
+                if (noResults) noResults.style.display = 'block';
+                if (emptyState) emptyState.style.display = 'none';
+            } else {
+                // Pokaż komunikat o pustej liście zakładek
+                if (noResults) noResults.style.display = 'none';
+                
+                if (!emptyState) {
+                    // Utwórz i dodaj komunikat o pustej liście
+                    const emptyStateDiv = document.createElement('div');
+                    emptyStateDiv.className = 'empty-state';
+                    emptyStateDiv.id = 'empty-state';
+                    
+                    const emptyText = document.createElement('p');
+                    emptyText.textContent = 'Brak zakładek';
+                    
+                    const addLink = document.createElement('a');
+                    addLink.href = '{{ url_for("add_bookmark") }}';
+                    addLink.className = 'btn';
+                    addLink.style.marginTop = '10px';
+                    addLink.textContent = 'Dodaj pierwszą zakładkę';
+                    
+                    emptyStateDiv.appendChild(emptyText);
+                    emptyStateDiv.appendChild(addLink);
+                    bookmarksContainer.appendChild(emptyStateDiv);
+                } else {
+                    emptyState.style.display = 'block';
+                }
+            }
+        } else {
+            // Ukryj oba komunikaty
+            if (noResults) noResults.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'none';
         }
     }
+    
+    // Obsługa wyszukiwania
+    const searchToggle = document.getElementById('search-toggle');
+    const searchInput = document.getElementById('search-input');
+    const searchClear = document.getElementById('search-clear');
+    const bookmarkItems = document.querySelectorAll('.bookmark-item');
+    
+    // Przycisk wyszukiwania
+    searchToggle.addEventListener('click', function() {
+        searchInput.classList.toggle('active');
+        if (searchInput.classList.contains('active')) {
+            searchInput.focus();
+        } else {
+            searchInput.value = '';
+            filterBookmarks('');
+            searchClear.classList.remove('active');
+        }
+    });
+    
+    // Przycisk czyszczenia wyszukiwania
+    searchClear.addEventListener('click', function() {
+        searchInput.value = '';
+        filterBookmarks('');
+        searchInput.focus();
+        searchClear.classList.remove('active');
+    });
+    
+    // Wyszukiwanie podczas pisania
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.trim().toLowerCase();
+        
+        if (searchTerm.length > 0) {
+            searchClear.classList.add('active');
+        } else {
+            searchClear.classList.remove('active');
+        }
+        
+        filterBookmarks(searchTerm);
+    });
+    
+    // Funkcja filtrująca zakładki
+    function filterBookmarks(searchTerm) {
+        let matchCount = 0;
+        
+        bookmarkItems.forEach(item => {
+            const title = item.getAttribute('data-title');
+            const url = item.getAttribute('data-url');
+            
+            if (title.includes(searchTerm) || url.includes(searchTerm)) {
+                item.classList.remove('hidden');
+                matchCount++;
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        
+        // Sprawdź czy są wyniki
+        checkIfEmpty();
+        
+        // Aktualizuj numerację widocznych elementów
+        updateVisibleIndexes();
+    }
+    
+    // Funkcja aktualizująca numerację widocznych zakładek
+    function updateVisibleIndexes() {
+        const visibleItems = document.querySelectorAll('.bookmark-item:not(.hidden)');
+        visibleItems.forEach((item, index) => {
+            const indexElement = item.querySelector('.bookmark-index');
+            if (indexElement) {
+                indexElement.textContent = `${index + 1}.`;
+            }
+        });
+    }
+    
+    // Obsługa klawisza escape - zamyka wyszukiwanie
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && searchInput.classList.contains('active')) {
+            searchInput.classList.remove('active');
+            searchInput.value = '';
+            filterBookmarks('');
+            searchClear.classList.remove('active');
+        }
+    });
 });
 </script>
 {% endblock %}
