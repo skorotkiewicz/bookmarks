@@ -1,517 +1,515 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-.bookmarks {
-    margin-top: 20px;
+:root {
+    --card-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    --hover-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    --card-radius: 8px;
+    --tag-bg: #f0f0f0;
+    --hover-bg: #f5f5f5;
+    --action-bg: rgba(255, 255, 255, 0.9);
 }
-.bookmark-item {
-    display: flex;
-    align-items: center;
-    /* padding: 10px 0; */
-    padding: 5px 0;
-    border-bottom: 1px solid var(--border-color);
-}
-.bookmark-item:hover {
-    background-color: #dfdfdf;
-}
-.bookmark-index {
-    color: #888;
-    margin-right: 10px;
-    min-width: 20px;
-    text-align: right;
-    font-size: 13px;
-}
-.bookmark-favicon {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    object-fit: contain;
-}
-.bookmark-content {
-    flex-grow: 1;
-}
-.bookmark-title-container {
+
+.dashboard-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    margin-bottom: 20px;
+    background-color: white;
+    padding: 12px;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
-.bookmark-title {
-    color: var(--text-color);
-    text-decoration: none;
-    font-size: 15px;
-}
-.bookmark-date {
-    display: none;
-    color: #999;
-    font-size: 11px;
-    margin-left: 10px;
-    white-space: nowrap;
-}
-.bookmark-item:not(.tiles-view .bookmark-item):hover .bookmark-date {
-    display: block;
-}
-.bookmark-url {
-    display: block;
-    text-decoration: none;
-    color: #828282;
-    font-size: 12px;
-    /* margin-top: 5px; */
-}
-.bookmark-description {
-    color: #666;
-    font-size: 13px;
-    /* margin-top: 3px; */
-}
-.delete-btn {
-    background: none;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    padding: 5px;
-    font-size: 18px;
-    opacity: 0.5;
-    transition: opacity 0.3s;
-}
-.delete-btn:hover {
-    opacity: 1;
-    color: var(--accent-color);
-}
-.empty-state {
-    text-align: center;
-    padding: 20px;
-    color: #888;
-}
-.hidden {
-    display: none !important;
-}
-.bookmark-deleted {
-    animation: fade-out 0.5s;
-}
-@keyframes fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
+
 .search-container {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    flex-grow: 1;
+    max-width: 600px;
+    position: relative;
 }
-.search-btn {
-    background: none;
-    border: none;
-    color: #555;
-    cursor: pointer;
-    padding: 8px;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-}
-.search-btn:hover {
-    color: var(--accent-color);
-}
+
 .search-input {
     flex-grow: 1;
-    padding: 8px 12px;
+    padding: 10px 12px 10px 38px;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 30px;
     font-size: 14px;
-    margin-left: 8px;
-    margin-right: 8px;
     transition: all 0.3s;
-    display: none;
+    width: 100%;
+    background-color: var(--bg-color);
 }
-.search-input.active {
-    display: block;
+
+.search-input:focus {
+    box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.2);
+    outline: none;
+    background-color: white;
 }
+
 .search-icon {
-    width: 18px;
-    height: 18px;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #888;
 }
+
 .search-clear {
     background: none;
     border: none;
     color: #888;
     cursor: pointer;
-    display: none;
     font-size: 16px;
     padding: 8px;
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
 }
+
 .search-clear.active {
     display: block;
 }
-.no-results {
-    text-align: center;
-    padding: 20px;
-    color: #888;
-    display: none;
+
+.controls-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
+
 .view-selector {
-    margin-left: 10px;
-    padding: 5px;
+    display: flex;
     border: 1px solid var(--border-color);
     border-radius: 4px;
+    overflow: hidden;
+}
+
+.view-btn {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
     font-size: 14px;
     background-color: white;
-    cursor: pointer;
 }
-.tiles-view .bookmark-item {
-    display: inline-block;
-    width: 100px;
-    height: 60px;
-    margin: 5px;
-    padding: 0;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    vertical-align: top;
-    transition: background-color 0.3s;
-    overflow: hidden;
+
+.view-btn:hover {
+    background-color: var(--hover-bg);
+}
+
+.view-btn.active {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.add-bookmark-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    text-decoration: none;
+}
+
+.add-bookmark-btn:hover {
+    opacity: 0.9;
+}
+
+.add-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Bookmarks container */
+.bookmarks {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+/* Card view styles (default) */
+.bookmark-item {
+    background-color: white;
+    border-radius: var(--card-radius);
+    padding: 16px;
+    transition: all 0.2s ease;
+    box-shadow: var(--card-shadow);
     position: relative;
-    cursor: pointer;
-}
-.tiles-view .bookmark-item:hover {
-    background-color: #dfdfdf;
-}
-.tiles-view .bookmark-item a.tile-link {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 5px;
-    text-decoration: none;
-    box-sizing: border-box;
 }
-.tiles-view .bookmark-item > .bookmark-favicon {
-    display: none;
+
+.bookmark-item:hover {
+    box-shadow: var(--hover-shadow);
+    transform: translateY(-2px);
 }
-.tiles-view .tile-link .bookmark-favicon {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 5px;
+
+.bookmark-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.bookmark-favicon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin-right: 10px;
     flex-shrink: 0;
 }
-.tiles-view .bookmark-index {
-    display: none;
+
+.bookmark-title-container {
+    flex-grow: 1;
 }
-.tiles-view .bookmark-content {
-    display: none !important;
-}
-.tiles-view .bookmark-title-container {
-    display: none !important;
-}
-.tiles-view .bookmark-item > .bookmark-content .bookmark-title {
-    display: none !important;
-}
-.tiles-view .tile-link .bookmark-title {
+
+.bookmark-title {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
     display: block;
-    text-align: center;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.bookmark-url {
+    display: block;
+    text-decoration: none;
+    color: #828282;
+    font-size: 12px;
+    margin-bottom: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 90px;
-    font-size: 12px;
-    color: var(--text-color);
 }
-.tiles-view .bookmark-date,
+
+.bookmark-description {
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    flex-grow: 1;
+}
+
+.bookmark-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.bookmark-date {
+    color: #999;
+    font-size: 12px;
+}
+
+.bookmark-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background-color: var(--hover-bg);
+    color: var(--accent-color);
+}
+
+.delete-btn {
+    color: #888;
+}
+
+.delete-btn:hover {
+    color: #e74c3c;
+}
+
+.bookmark-index {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #aaa;
+    font-size: 12px;
+    background-color: var(--tag-bg);
+    padding: 2px 6px;
+    border-radius: 12px;
+}
+
+/* Compact list view */
+.list-view {
+    display: block;
+}
+
+.list-view .bookmark-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.list-view .bookmark-header {
+    margin-bottom: 0;
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.list-view .bookmark-title {
+    margin-bottom: 2px;
+}
+
+.list-view .bookmark-description {
+    display: none;
+}
+
+.list-view .bookmark-footer {
+    display: none;
+}
+
+.list-view .bookmark-actions {
+    flex-shrink: 0;
+}
+
+.list-view .bookmark-url {
+    margin-bottom: 0;
+}
+
+/* Tile view for small cards */
+.tiles-view {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.tiles-view .bookmark-item {
+    height: 150px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+}
+
+.tiles-view .bookmark-header {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.tiles-view .bookmark-favicon {
+    width: 32px;
+    height: 32px;
+    margin: 0 0 10px 0;
+}
+
+.tiles-view .bookmark-title {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+    text-align: center;
+}
+
 .tiles-view .bookmark-url,
 .tiles-view .bookmark-description,
-.tiles-view .delete-form {
+.tiles-view .bookmark-footer,
+.tiles-view .bookmark-date {
+    display: none;
+}
+
+.tiles-view .bookmark-actions {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: var(--action-bg);
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.tiles-view .bookmark-item:hover .bookmark-actions {
+    opacity: 1;
+}
+
+/* Empty state and no results */
+.empty-state, .no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+    background-color: white;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    grid-column: 1 / -1;
+}
+
+.empty-state .icon, .no-results .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #ddd;
+}
+
+.no-results {
+    display: none;
+}
+
+/* Animation */
+.bookmark-deleted {
+    animation: fade-out 0.5s;
+}
+
+@keyframes fade-out {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.9); }
+}
+
+.hidden {
     display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    width: 0 !important;
-    overflow: hidden !important;
-    opacity: 0 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .search-container {
+        max-width: 100%;
+    }
+    
+    .controls-right {
+        justify-content: space-between;
+    }
+    
+    .bookmarks {
+        grid-template-columns: 1fr;
+    }
+    
+    .tiles-view {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
 }
 </style>
 
-<div class="search-container">
-    <button id="search-toggle" class="search-btn" title="{{ t('dashboard.search_title') }}">
+<!-- Dashboard controls -->
+<div class="dashboard-controls">
+    <div class="search-container">
         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-    </button>
-    <input type="text" id="search-input" class="search-input" placeholder="{{ t('dashboard.search_placeholder') }}" autocomplete="off">
-    <button id="search-clear" class="search-clear" title="{{ t('dashboard.clear_search') }}">✕</button>
-    <select id="view-selector" class="view-selector">
-        <option value="list">{{ t('dashboard.view_selector.detailed') }}</option>
-        <option value="tiles">{{ t('dashboard.view_selector.tiles') }}</option>
-    </select>
+        <input type="text" id="search-input" class="search-input" placeholder="{{ t('dashboard.search_placeholder') }}" autocomplete="off">
+        <button id="search-clear" class="search-clear" title="{{ t('dashboard.clear_search') }}">✕</button>
+    </div>
+    
+    <div class="controls-right">
+        <div class="view-selector">
+            <button id="view-card" class="view-btn active" data-view="card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </button>
+            <button id="view-list" class="view-btn" data-view="list">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </button>
+            <button id="view-tiles" class="view-btn" data-view="tiles">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="4" height="4"></rect><rect x="10" y="3" width="4" height="4"></rect><rect x="17" y="3" width="4" height="4"></rect><rect x="3" y="10" width="4" height="4"></rect><rect x="10" y="10" width="4" height="4"></rect><rect x="17" y="10" width="4" height="4"></rect><rect x="3" y="17" width="4" height="4"></rect><rect x="10" y="17" width="4" height="4"></rect><rect x="17" y="17" width="4" height="4"></rect></svg>
+            </button>
+        </div>
+        
+        <a href="{{ url_for('add_bookmark') }}" class="add-bookmark-btn">
+            {{ t('navigation.add') }}
+        </a>
+    </div>
 </div>
 
 <div class="bookmarks">
     {% if user.bookmarks %}
         {% for bookmark in user.bookmarks %}
         <div class="bookmark-item" id="bookmark-{{ bookmark.id }}" data-title="{{ bookmark.title | lower }}" data-url="{{ bookmark.url | lower }}">
-            <div class="bookmark-index">{{ loop.index }}.</div>
-            <img src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon">
-            <div class="bookmark-content">
+            <span class="bookmark-index">{{ loop.index }}</span>
+            
+            <div class="bookmark-header">
+                <img src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon">
                 <div class="bookmark-title-container">
                     <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-title" title="{{ bookmark.title }}">
                         {{ bookmark.title }}
                     </a>
-                    <span class="bookmark-date">{{ bookmark.created_at.strftime('%d-%m-%Y, %H:%M') }}</span>
+                    <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-url" title="{{ bookmark.url }}">
+                        {{ bookmark.url }}
+                    </a>
                 </div>
-                <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-url">
-                    {{ bookmark.url }}
-                </a>
-                {% if bookmark.description %}
-                    <div class="bookmark-description">{{ bookmark.description }}</div>
-                {% endif %}
             </div>
-            <form class="delete-form" data-bookmark-id="{{ bookmark.id }}" data-index="{{ loop.index }}" method="POST" action="{{ url_for('delete_bookmark', bookmark_id=bookmark.id) }}" style="margin: 0;">
-                <button type="submit" class="delete-btn">{{ t('bookmarks.delete_button') }}</button>
-            </form>
+            
+            {% if bookmark.description %}
+                <div class="bookmark-description">{{ bookmark.description }}</div>
+            {% endif %}
+            
+            <div class="bookmark-footer">
+                <span class="bookmark-date">{{ bookmark.created_at.strftime('%d-%m-%Y') }}</span>
+                
+                <div class="bookmark-actions">
+                    <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="action-btn open-btn" title="{{ t('bookmarks.open_title') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                    <form class="delete-form" data-bookmark-id="{{ bookmark.id }}" data-index="{{ loop.index }}" method="POST" action="{{ url_for('delete_bookmark', bookmark_id=bookmark.id) }}" style="margin: 0;">
+                        <button type="submit" class="action-btn delete-btn" title="{{ t('bookmarks.delete_button') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
         {% endfor %}
     {% else %}
         <div class="empty-state" id="empty-state">
+            <div class="icon">📚</div>
             <p>{{ t('dashboard.no_bookmarks') }}</p>
             <a href="{{ url_for('add_bookmark') }}" class="btn" style="margin-top: 10px;">{{ t('dashboard.add_first') }}</a>
         </div>
     {% endif %}
     <div id="no-results" class="no-results">
+        <div class="icon">🔍</div>
         <p>{{ t('dashboard.no_results') }}</p>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Obsługa przełączania widoku (lista/kafelki)
-    const viewSelector = document.getElementById('view-selector');
+    // DOM Elements
     const bookmarksContainer = document.querySelector('.bookmarks');
-    
-    // Sprawdź, czy w localStorage jest zapisany preferowany widok
-    const savedView = localStorage.getItem('bookmarksView');
-    if (savedView) {
-        viewSelector.value = savedView;
-        if (savedView === 'tiles') {
-            bookmarksContainer.classList.add('tiles-view');
-        }
-    }
-    
-    // Obsługa zmiany widoku
-    viewSelector.addEventListener('change', function() {
-        const selectedView = this.value;
-        
-        if (selectedView === 'tiles') {
-            bookmarksContainer.classList.add('tiles-view');
-            // Dodaj klasy tile-link do linków w widoku kafelków
-            setupTileLinks(true);
-        } else {
-            bookmarksContainer.classList.remove('tiles-view');
-            // Usuń klasy tile-link
-            setupTileLinks(false);
-        }
-        
-        // Zapisz wybrany widok w localStorage
-        localStorage.setItem('bookmarksView', selectedView);
-    });
-    
-    // Funkcja dodająca lub usuwająca klasy tile-link
-    function setupTileLinks(isTileView) {
-        const bookmarkItems = document.querySelectorAll('.bookmark-item');
-        
-        bookmarkItems.forEach(item => {
-            // Ukryj description, date i inne elementy 
-            if (isTileView) {
-                const descriptionEl = item.querySelector('.bookmark-description');
-                const dateEl = item.querySelector('.bookmark-date');
-                const urlEl = item.querySelector('.bookmark-url');
-                
-                if (descriptionEl) descriptionEl.style.cssText = 'display:none!important; visibility:hidden!important; height:0!important; width:0!important; overflow:hidden!important; opacity:0!important;';
-                if (dateEl) dateEl.style.cssText = 'display:none!important; visibility:hidden!important; height:0!important; width:0!important; overflow:hidden!important; opacity:0!important;';
-                if (urlEl) urlEl.style.cssText = 'display:none!important; visibility:hidden!important; height:0!important; width:0!important; overflow:hidden!important; opacity:0!important;';
-            } else {
-                const descriptionEl = item.querySelector('.bookmark-description');
-                const dateEl = item.querySelector('.bookmark-date');
-                const urlEl = item.querySelector('.bookmark-url');
-                
-                if (descriptionEl) descriptionEl.style.cssText = '';
-                if (dateEl) dateEl.style.cssText = '';
-                if (urlEl) urlEl.style.cssText = '';
-            }
-            
-            const bookmarkId = item.id.replace('bookmark-', '');
-            const bookmarkLink = item.querySelector('.bookmark-title').getAttribute('href');
-            const favicon = item.querySelector('.bookmark-favicon').cloneNode(true);
-            const titleText = item.querySelector('.bookmark-title').textContent.trim();
-            
-            // Usuń istniejący tile-link jeśli istnieje
-            const existingTileLink = item.querySelector('.tile-link');
-            if (existingTileLink) {
-                existingTileLink.remove();
-            }
-            
-            if (isTileView) {
-                // Dodaj link obejmujący cały kafelek
-                const tileLink = document.createElement('a');
-                tileLink.href = bookmarkLink;
-                tileLink.className = 'tile-link';
-                tileLink.target = '_blank';
-                tileLink.rel = 'noopener';
-                
-                // Dodaj favicon i tytuł do linku (skrócony do max 10 znaków)
-                tileLink.appendChild(favicon);
-                const titleSpan = document.createElement('span');
-                titleSpan.className = 'bookmark-title';
-                
-                // Skróć tytuł do maksymalnie 10 znaków
-                let truncatedTitle = titleText.length > 10 ? 
-                    titleText.substring(0, 10) + '...' : 
-                    titleText;
-                    
-                titleSpan.textContent = truncatedTitle;
-                titleSpan.title = titleText; // Pełny tytuł pojawi się po najechaniu
-                tileLink.appendChild(titleSpan);
-                
-                item.appendChild(tileLink);
-            }
-        });
-    }
-    
-    // Zastosuj tile-link przy ładowaniu strony, jeśli jest to widok kafelków
-    if (savedView === 'tiles') {
-        setupTileLinks(true);
-    }
-    
-    // Pobierz wszystkie formularze usuwania
-    const deleteForms = document.querySelectorAll('.delete-form');
-    
-    // Dodaj obsługę zdarzenia do każdego formularza
-    deleteForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Zapobiegaj domyślnej akcji formularza
-            
-            const bookmarkId = this.getAttribute('data-bookmark-id');
-            const bookmarkElement = document.getElementById(`bookmark-${bookmarkId}`);
-            
-            // Potwierdzenie przed usunięciem
-            if (!confirm('{{ t("bookmarks.confirm_delete") }}')) {
-                return; // Przerwij jeśli użytkownik anulował
-            }
-            
-            // Wykonaj żądanie AJAX
-            fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Dodaj klasę animacji
-                    bookmarkElement.classList.add('bookmark-deleted');
-                    
-                    // Po zakończeniu animacji usuń element z DOM
-                    setTimeout(() => {
-                        bookmarkElement.remove();
-                        
-                        // Zaktualizuj numerację
-                        updateBookmarkIndexes();
-                        
-                        // Sprawdź, czy lista jest pusta
-                        checkIfEmpty();
-                    }, 500); // Czas odpowiadający długości animacji
-                }
-            })
-            .catch(error => {
-                console.error('Błąd:', error);
-            });
-        });
-    });
-    
-    // Funkcja aktualizująca numerację zakładek
-    function updateBookmarkIndexes() {
-        const indexElements = document.querySelectorAll('.bookmark-index');
-        indexElements.forEach((el, index) => {
-            el.textContent = `${index + 1}.`;
-        });
-    }
-    
-    // Funkcja sprawdzająca, czy lista jest pusta
-    function checkIfEmpty() {
-        const bookmarkItems = document.querySelectorAll('.bookmark-item:not(.hidden)');
-        const emptyState = document.getElementById('empty-state');
-        const bookmarksContainer = document.querySelector('.bookmarks');
-        const noResults = document.getElementById('no-results');
-        
-        // Sprawdź, czy jest to wynik wyszukiwania
-        const searchInput = document.getElementById('search-input');
-        const isSearching = searchInput && searchInput.value.trim().length > 0;
-        
-        if (bookmarkItems.length === 0) {
-            if (isSearching) {
-                // Pokaż komunikat o braku wyników wyszukiwania
-                if (noResults) noResults.style.display = 'block';
-                if (emptyState) emptyState.style.display = 'none';
-            } else {
-                // Pokaż komunikat o pustej liście zakładek
-                if (noResults) noResults.style.display = 'none';
-                
-                if (!emptyState) {
-                    // Utwórz i dodaj komunikat o pustej liście
-                    const emptyStateDiv = document.createElement('div');
-                    emptyStateDiv.className = 'empty-state';
-                    emptyStateDiv.id = 'empty-state';
-                    
-                    const emptyText = document.createElement('p');
-                    emptyText.textContent = 'Brak zakładek';
-                    
-                    const addLink = document.createElement('a');
-                    addLink.href = '{{ url_for("add_bookmark") }}';
-                    addLink.className = 'btn';
-                    addLink.style.marginTop = '10px';
-                    addLink.textContent = 'Dodaj pierwszą zakładkę';
-                    
-                    emptyStateDiv.appendChild(emptyText);
-                    emptyStateDiv.appendChild(addLink);
-                    bookmarksContainer.appendChild(emptyStateDiv);
-                } else {
-                    emptyState.style.display = 'block';
-                }
-            }
-        } else {
-            // Ukryj oba komunikaty
-            if (noResults) noResults.style.display = 'none';
-            if (emptyState) emptyState.style.display = 'none';
-        }
-    }
-    
-    // Obsługa wyszukiwania
-    const searchToggle = document.getElementById('search-toggle');
     const searchInput = document.getElementById('search-input');
     const searchClear = document.getElementById('search-clear');
     const bookmarkItems = document.querySelectorAll('.bookmark-item');
+    const viewButtons = document.querySelectorAll('.view-btn');
     
-    // Przycisk wyszukiwania
-    searchToggle.addEventListener('click', function() {
-        searchInput.classList.toggle('active');
-        if (searchInput.classList.contains('active')) {
-            searchInput.focus();
-        } else {
-            searchInput.value = '';
-            filterBookmarks('');
-            searchClear.classList.remove('active');
-        }
-    });
+    // Initialize view based on localStorage preference
+    const savedView = localStorage.getItem('bookmarksView') || 'card';
+    setActiveView(savedView);
     
-    // Przycisk czyszczenia wyszukiwania
-    searchClear.addEventListener('click', function() {
-        searchInput.value = '';
-        filterBookmarks('');
-        searchInput.focus();
-        searchClear.classList.remove('active');
-    });
-    
-    // Wyszukiwanie podczas pisania
+    // Search input event
     searchInput.addEventListener('input', function() {
         const searchTerm = this.value.trim().toLowerCase();
         
@@ -524,7 +522,46 @@ document.addEventListener('DOMContentLoaded', function() {
         filterBookmarks(searchTerm);
     });
     
-    // Funkcja filtrująca zakładki
+    // Search clear button
+    searchClear.addEventListener('click', function() {
+        searchInput.value = '';
+        searchInput.focus();
+        searchClear.classList.remove('active');
+        filterBookmarks('');
+    });
+    
+    // View selector buttons
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const viewType = this.getAttribute('data-view');
+            setActiveView(viewType);
+            localStorage.setItem('bookmarksView', viewType);
+        });
+    });
+    
+    // Set active view type
+    function setActiveView(viewType) {
+        // Update active button
+        viewButtons.forEach(btn => {
+            if (btn.getAttribute('data-view') === viewType) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        
+        // Remove all view classes
+        bookmarksContainer.classList.remove('list-view', 'tiles-view');
+        
+        // Add the appropriate view class
+        if (viewType === 'list') {
+            bookmarksContainer.classList.add('list-view');
+        } else if (viewType === 'tiles') {
+            bookmarksContainer.classList.add('tiles-view');
+        }
+    }
+    
+    // Filter bookmarks based on search
     function filterBookmarks(searchTerm) {
         let matchCount = 0;
         
@@ -540,39 +577,133 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Sprawdź czy są wyniki
-        checkIfEmpty();
+        // Check if we have results
+        checkIfEmpty(matchCount === 0 && searchTerm.length > 0);
         
-        // Aktualizuj numerację widocznych elementów
+        // Update visible item indexes
         updateVisibleIndexes();
-        
-        // Jeśli jesteśmy w widoku kafelków, odśwież tile-links dla widocznych elementów
-        const isInTileView = bookmarksContainer.classList.contains('tiles-view');
-        if (isInTileView) {
-            setupTileLinks(true);
-        }
     }
     
-    // Funkcja aktualizująca numerację widocznych zakładek
+    // Update bookmark indexes for visible items
     function updateVisibleIndexes() {
         const visibleItems = document.querySelectorAll('.bookmark-item:not(.hidden)');
         visibleItems.forEach((item, index) => {
             const indexElement = item.querySelector('.bookmark-index');
             if (indexElement) {
-                indexElement.textContent = `${index + 1}.`;
+                indexElement.textContent = index + 1;
             }
         });
     }
     
-    // Obsługa klawisza escape - zamyka wyszukiwanie
+    // Check if bookmarks list is empty
+    function checkIfEmpty(isSearchWithNoResults) {
+        const emptyState = document.getElementById('empty-state');
+        const noResults = document.getElementById('no-results');
+        
+        if (isSearchWithNoResults) {
+            if (noResults) noResults.style.display = 'block';
+            if (emptyState) emptyState.style.display = 'none';
+        } else {
+            const hasVisibleBookmarks = document.querySelectorAll('.bookmark-item:not(.hidden)').length > 0;
+            
+            if (noResults) noResults.style.display = 'none';
+            
+            if (!hasVisibleBookmarks) {
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                } else {
+                    // Create empty state if it doesn't exist
+                    const emptyStateDiv = document.createElement('div');
+                    emptyStateDiv.className = 'empty-state';
+                    emptyStateDiv.id = 'empty-state';
+                    
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'icon';
+                    iconDiv.textContent = '📚';
+                    
+                    const emptyText = document.createElement('p');
+                    emptyText.textContent = '{{ t("dashboard.no_bookmarks") }}';
+                    
+                    const addLink = document.createElement('a');
+                    addLink.href = '{{ url_for("add_bookmark") }}';
+                    addLink.className = 'btn';
+                    addLink.style.marginTop = '10px';
+                    addLink.textContent = '{{ t("dashboard.add_first") }}';
+                    
+                    emptyStateDiv.appendChild(iconDiv);
+                    emptyStateDiv.appendChild(emptyText);
+                    emptyStateDiv.appendChild(addLink);
+                    bookmarksContainer.appendChild(emptyStateDiv);
+                }
+            } else if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+        }
+    }
+    
+    // Delete bookmark forms
+    const deleteForms = document.querySelectorAll('.delete-form');
+    
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const bookmarkId = this.getAttribute('data-bookmark-id');
+            const bookmarkElement = document.getElementById(`bookmark-${bookmarkId}`);
+            
+            // Confirm deletion
+            if (!confirm('{{ t("bookmarks.confirm_delete") }}')) {
+                return;
+            }
+            
+            // Send AJAX request
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Animate and remove element
+                    bookmarkElement.classList.add('bookmark-deleted');
+                    
+                    setTimeout(() => {
+                        bookmarkElement.remove();
+                        updateVisibleIndexes();
+                        checkIfEmpty(false);
+                    }, 500);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
+    // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && searchInput.classList.contains('active')) {
-            searchInput.classList.remove('active');
+        // Escape key closes search results
+        if (e.key === 'Escape' && searchInput.value) {
             searchInput.value = '';
-            filterBookmarks('');
             searchClear.classList.remove('active');
+            filterBookmarks('');
+        }
+        
+        // Ctrl+F or / focuses search
+        if ((e.key === 'f' && (e.ctrlKey || e.metaKey)) || e.key === '/') {
+            if (!['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                searchInput.focus();
+            }
         }
     });
+    
+    // Auto-focus search on page load
+    if (window.innerWidth > 768) {
+        searchInput.focus();
+    }
 });
 </script>
 {% endblock %}
