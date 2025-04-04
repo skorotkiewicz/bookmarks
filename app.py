@@ -264,7 +264,8 @@ def fetch_and_save_favicon(url, bookmark_id):
         domain = parsed_url.netloc
         
         # Użycie Google Favicon API
-        favicon_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=32"
+        # favicon_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=32"
+        favicon_url = f"https://favicone.com/{domain}?s=32"
         
         # Pobieranie favicon
         favicon_response = requests.get(favicon_url, timeout=5)
