@@ -15,12 +15,8 @@ A powerful, lightweight web application for organizing, storing, and managing yo
 ## Screenshots
 
 ![screenshot_bookmarks](images/screenshot_bookmarks.png "Screenshot Bookmarks")
-
-Checkbox to keep this bookmark
-
 ![screenshot_tools](images/screenshot_tools.png "Screenshot Tools")
 ![screenshot_import](images/screenshot_import.png "Screenshot Import")
-
 
 ## Installation
 
