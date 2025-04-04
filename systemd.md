@@ -89,6 +89,9 @@ source /home/username/.bashrc
 Now the user can manage their service with the following commands:
 
 ```bash
+# Reload daemons
+systemctl --user daemon-reload
+
 # Enable the service to start on boot
 systemctl --user enable your-app-name.service
 
