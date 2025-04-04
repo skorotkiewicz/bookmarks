@@ -28,26 +28,6 @@ Checkbox to keep this bookmark
 
 - Python 3.7 or higher
 - pip (Python package manager)
-- Cairo library (required for favicon handling)
-
-### Cairo Installation
-
-Before installing Python dependencies, you need to install the Cairo library on your system:
-
-```bash
-# Ubuntu/Debian
-sudo apt-get update
-sudo apt-get install libcairo2-dev
-
-# Fedora/RHEL/CentOS
-sudo dnf install cairo-devel
-
-# macOS
-brew install cairo
-
-# Windows
-choco install cairo
-```
 
 ### Setup
 
