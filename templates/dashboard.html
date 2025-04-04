@@ -153,14 +153,36 @@ img[src] {
     color: #888;
     display: none;
 }
-.view-selector {
+.view-toggle-group {
+    display: flex;
     margin-left: 10px;
-    padding: 5px;
+}
+.view-toggle-btn {
+    background: none;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: white;
+    color: #555;
     cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.view-toggle-btn:first-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-right: none;
+}
+.view-toggle-btn:last-child {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+.view-toggle-btn.active {
+    background-color: var(--accent-color);
+    color: white;
+}
+.view-toggle-icon {
+    width: 16px;
+    height: 16px;
 }
 .tiles-view .bookmark-item {
     display: inline-block;
@@ -244,12 +266,28 @@ img[src] {
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
     </button>
-    <input type="text" id="search-input" class="search-input" placeholder="{{ t('dashboard.search_placeholder') }}" autocomplete="off">
+    <input type="text" id="search-input" class="search-input active" placeholder="{{ t('dashboard.search_placeholder') }}" autocomplete="off">
     <button id="search-clear" class="search-clear" title="{{ t('dashboard.clear_search') }}">✕</button>
-    <select id="view-selector" class="view-selector">
-        <option value="list">{{ t('dashboard.view_selector.detailed') }}</option>
-        <option value="tiles">{{ t('dashboard.view_selector.tiles') }}</option>
-    </select>
+    <div class="view-toggle-group">
+        <button id="list-view-btn" class="view-toggle-btn active" title="{{ t('dashboard.view_selector.detailed') }}">
+            <svg class="view-toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+        </button>
+        <button id="tiles-view-btn" class="view-toggle-btn" title="{{ t('dashboard.view_selector.tiles') }}">
+            <svg class="view-toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+        </button>
+    </div>
 </div>
 
 <div class="bookmarks">
@@ -322,38 +360,51 @@ document.addEventListener('DOMContentLoaded', function() {
     lazyLoadFavicons();
 
     // Obsługa przełączania widoku (lista/kafelki)
-    const viewSelector = document.getElementById('view-selector');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const tilesViewBtn = document.getElementById('tiles-view-btn');
     const bookmarksContainer = document.querySelector('.bookmarks');
     
     // Sprawdź, czy w localStorage jest zapisany preferowany widok
     const savedView = localStorage.getItem('bookmarksView');
     if (savedView) {
-        viewSelector.value = savedView;
         if (savedView === 'tiles') {
+            listViewBtn.classList.remove('active');
+            tilesViewBtn.classList.add('active');
             bookmarksContainer.classList.add('tiles-view');
+        } else {
+            listViewBtn.classList.add('active');
+            tilesViewBtn.classList.remove('active');
+            bookmarksContainer.classList.remove('tiles-view');
         }
     }
     
-    // Obsługa zmiany widoku
-    viewSelector.addEventListener('change', function() {
-        const selectedView = this.value;
+    // Obsługa przycisków widoku
+    listViewBtn.addEventListener('click', function() {
+        listViewBtn.classList.add('active');
+        tilesViewBtn.classList.remove('active');
+        bookmarksContainer.classList.remove('tiles-view');
         
-        if (selectedView === 'tiles') {
-            bookmarksContainer.classList.add('tiles-view');
-            // Dodaj klasy tile-link do linków w widoku kafelków
-            setupTileLinks(true);
-            // Ponownie uruchom lazy loading po zmianie widoku
-            lazyLoadFavicons();
-        } else {
-            bookmarksContainer.classList.remove('tiles-view');
-            // Usuń klasy tile-link
-            setupTileLinks(false);
-            // Ponownie uruchom lazy loading po zmianie widoku
-            lazyLoadFavicons();
-        }
+        // Usuń klasy tile-link
+        setupTileLinks(false);
+        // Ponownie uruchom lazy loading po zmianie widoku
+        lazyLoadFavicons();
         
         // Zapisz wybrany widok w localStorage
-        localStorage.setItem('bookmarksView', selectedView);
+        localStorage.setItem('bookmarksView', 'list');
+    });
+    
+    tilesViewBtn.addEventListener('click', function() {
+        listViewBtn.classList.remove('active');
+        tilesViewBtn.classList.add('active');
+        bookmarksContainer.classList.add('tiles-view');
+        
+        // Dodaj klasy tile-link do linków w widoku kafelków
+        setupTileLinks(true);
+        // Ponownie uruchom lazy loading po zmianie widoku
+        lazyLoadFavicons();
+        
+        // Zapisz wybrany widok w localStorage
+        localStorage.setItem('bookmarksView', 'tiles');
     });
     
     // Funkcja dodająca lub usuwająca klasy tile-link
