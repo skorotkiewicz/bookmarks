@@ -146,17 +146,17 @@
         findDuplicatesBtn.addEventListener('click', function() {
             // Show loading state
             findDuplicatesBtn.disabled = true;
-            findDuplicatesBtn.textContent = '{{ t('tools.loading') }}';
+            findDuplicatesBtn.textContent = '{{ t("tools.loading") }}';
 
             // Fetch duplicates from the server
             fetch('/find_duplicates')
                 .then(response => response.json())
                 .then(data => {
                     findDuplicatesBtn.disabled = false;
-                    findDuplicatesBtn.textContent = '{{ t('tools.find_duplicates_button') }}';
+                    findDuplicatesBtn.textContent = '{{ t("tools.find_duplicates_button") }}';
                     
                     if (data.duplicates.length === 0) {
-                        alert('{{ t('tools.no_duplicates_found') }}');
+                        alert('{{ t("tools.no_duplicates_found") }}');
                         return;
                     }
 
@@ -167,13 +167,13 @@
                 .catch(error => {
                     console.error('Error:', error);
                     findDuplicatesBtn.disabled = false;
-                    findDuplicatesBtn.textContent = '{{ t('tools.find_duplicates_button') }}';
-                    alert('{{ t('tools.error_finding_duplicates') }}');
+                    findDuplicatesBtn.textContent = '{{ t("tools.find_duplicates_button") }}';
+                    alert('{{ t("tools.error_finding_duplicates") }}');
                 });
         });
 
         removeDuplicatesBtn.addEventListener('click', function() {
-            if (!confirm('{{ t('tools.confirm_remove_duplicates') }}')) {
+            if (!confirm('{{ t("tools.confirm_remove_duplicates") }}')) {
                 return;
             }
 
@@ -194,16 +194,16 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('{{ t('tools.duplicates_removed_success') }}');
+                        alert('{{ t("tools.duplicates_removed_success") }}');
                         resultsContainer.style.display = 'none';
                         duplicatesList.innerHTML = '';
                     } else {
-                        alert('{{ t('tools.error_removing_duplicates') }}');
+                        alert('{{ t("tools.error_removing_duplicates") }}');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('{{ t('tools.error_removing_duplicates') }}');
+                    alert('{{ t("tools.error_removing_duplicates") }}');
                 });
         });
 
@@ -264,7 +264,7 @@
                         const checkboxes = document.querySelectorAll(`input[name="keep_${groupIndex}"]:checked`);
                         if (checkboxes.length === 0) {
                             this.checked = true;
-                            alert('{{ t('tools.keep_at_least_one') }}');
+                            alert('{{ t("tools.keep_at_least_one") }}');
                         }
                     });
                     
@@ -281,14 +281,14 @@
         fetchFaviconsBtn.addEventListener('click', function() {
             // Show loading state
             fetchFaviconsBtn.disabled = true;
-            fetchFaviconsBtn.textContent = '{{ t('tools.fetching_favicons') }}';
+            fetchFaviconsBtn.textContent = '{{ t("tools.fetching_favicons") }}';
             
             // Fetch favicons from the server
             fetch('/fetch_all_favicons')
                 .then(response => response.json())
                 .then(data => {
                     fetchFaviconsBtn.disabled = false;
-                    fetchFaviconsBtn.textContent = '{{ t('tools.fetch_favicons_button') }}';
+                    fetchFaviconsBtn.textContent = '{{ t("tools.fetch_favicons_button") }}';
                     
                     if (data.success) {
                         alert(data.message + ' (' + data.count + ')');
@@ -299,8 +299,8 @@
                 .catch(error => {
                     console.error('Error:', error);
                     fetchFaviconsBtn.disabled = false;
-                    fetchFaviconsBtn.textContent = '{{ t('tools.fetch_favicons_button') }}';
-                    alert('{{ t('tools.error_fetching_favicons') }}');
+                    fetchFaviconsBtn.textContent = '{{ t("tools.fetch_favicons_button") }}';
+                    alert('{{ t("tools.error_fetching_favicons") }}');
                 });
         });
     });
