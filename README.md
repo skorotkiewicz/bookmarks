@@ -34,27 +34,20 @@ Checkbox to keep this bookmark
 
 Before installing Python dependencies, you need to install the Cairo library on your system:
 
-### Ubuntu/Debian
 ```bash
+# Ubuntu/Debian
 sudo apt-get update
 sudo apt-get install libcairo2-dev
-```
 
-### Fedora/RHEL/CentOS
-```bash
+# Fedora/RHEL/CentOS
 sudo dnf install cairo-devel
-```
 
-### macOS
-```bash
+# macOS
 brew install cairo
-```
 
-### Windows
-```bash
+# Windows
 choco install cairo
 ```
-
 
 ### Setup
 
