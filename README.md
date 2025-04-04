@@ -46,8 +46,6 @@ Checkbox to keep this bookmark
 3. Install dependencies
    ```bash
    pip install -r requirements.txt
-   pip install --upgrade flask-sqlalchemy sqlalchemy
-   pip install waitress  # For production deployment
    ```
 
 4. Run the application
