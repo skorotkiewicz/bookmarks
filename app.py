@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import requests
+import io
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, redirect, url_for, flash, session, g, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,6 +12,8 @@ import urllib.parse
 import hashlib
 from functools import wraps
 import time
+import cairosvg
+from PIL import Image
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -296,9 +299,42 @@ def fetch_and_save_favicon(url, bookmark_id):
             # Pobieranie favicon
             favicon_response = requests.get(favicon_url, timeout=5)
             if favicon_response.status_code == 200:
-                # Zapisanie favicon
-                with open(favicon_path, 'wb') as f:
-                    f.write(favicon_response.content)
+                # Sprawdź, czy pobrano plik SVG
+                is_svg = False
+                content_type = favicon_response.headers.get('Content-Type', '').lower()
+                if 'svg' in content_type or favicon_url.lower().endswith('.svg'):
+                    is_svg = True
+                
+                if is_svg:
+                    # Konwersja SVG do PNG przy użyciu cairosvg
+                    try:
+                        # Konwertuj SVG na PNG
+                        png_data = cairosvg.svg2png(bytestring=favicon_response.content)
+                        
+                        # Otwarcie obrazu z pamięci za pomocą PIL i dostosowanie rozmiaru
+                        img = Image.open(io.BytesIO(png_data))
+                        img = img.resize((32, 32), Image.LANCZOS)  # Skaluj do 32x32
+                        
+                        # Zapisz favicon jako PNG
+                        img.save(favicon_path, format="PNG")
+                    except Exception as e:
+                        print(f"Error converting SVG to PNG: {e}")
+                        # Jeśli konwersja się nie powiedzie, zapisz oryginalny plik
+                        with open(favicon_path, 'wb') as f:
+                            f.write(favicon_response.content)
+                else:
+                    # Dla innych formatów po prostu zapisz plik
+                    try:
+                        # Próbuj otworzyć obrazek przez PIL aby sprawdzić czy jest poprawny
+                        img = Image.open(io.BytesIO(favicon_response.content))
+                        img = img.resize((32, 32), Image.LANCZOS)  # Skaluj do 32x32
+                        img.save(favicon_path, format="PNG")
+                    except Exception as e:
+                        print(f"Error processing favicon: {e}")
+                        # Zapisz oryginalny plik jeśli nie udało się przetworzyć przez PIL
+                        with open(favicon_path, 'wb') as f:
+                            f.write(favicon_response.content)
+                
                 return favicon_filename
         except Exception as e:
             print(f"Error get favicon: {e}")
