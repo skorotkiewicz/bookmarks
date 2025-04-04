@@ -108,15 +108,15 @@ img[src] {
     background: none;
     border: none;
     color: #555;
-    cursor: pointer;
+    /* cursor: pointer; */
     padding: 8px;
     font-size: 18px;
     display: flex;
     align-items: center;
 }
-.search-btn:hover {
+/* .search-btn:hover {
     color: var(--accent-color);
-}
+} */
 .search-input {
     flex-grow: 1;
     padding: 8px 12px;
@@ -126,10 +126,6 @@ img[src] {
     margin-left: 8px;
     margin-right: 8px;
     transition: all 0.3s;
-    display: none;
-}
-.search-input.active {
-    display: block;
 }
 .search-icon {
     width: 18px;
@@ -279,7 +275,7 @@ img[src] {
 </style>
 
 <div class="search-container">
-    <button id="search-toggle" class="search-btn" title="{{ t('dashboard.search_title') }}">
+    <button class="search-btn" title="{{ t('dashboard.search_title') }}">
         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -604,22 +600,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Obsługa wyszukiwania
-    const searchToggle = document.getElementById('search-toggle');
     const searchInput = document.getElementById('search-input');
     const searchClear = document.getElementById('search-clear');
     const bookmarkItems = document.querySelectorAll('.bookmark-item');
-    
-    // Przycisk wyszukiwania
-    searchToggle.addEventListener('click', function() {
-        searchInput.classList.toggle('active');
-        if (searchInput.classList.contains('active')) {
-            searchInput.focus();
-        } else {
-            searchInput.value = '';
-            filterBookmarks('');
-            searchClear.classList.remove('active');
-        }
-    });
     
     // Przycisk czyszczenia wyszukiwania
     searchClear.addEventListener('click', function() {
@@ -684,16 +667,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Obsługa klawisza escape - zamyka wyszukiwanie
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && searchInput.classList.contains('active')) {
-            searchInput.classList.remove('active');
-            searchInput.value = '';
-            filterBookmarks('');
-            searchClear.classList.remove('active');
-        }
-    });
 });
 </script>
 {% endblock %}
