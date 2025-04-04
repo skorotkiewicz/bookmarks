@@ -27,6 +27,13 @@
     margin-right: 8px;
     object-fit: contain;
 }
+.lazy-load {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+img[src] {
+    opacity: 1;
+}
 .bookmark-content {
     flex-grow: 1;
 }
@@ -250,7 +257,7 @@
         {% for bookmark in user.bookmarks %}
         <div class="bookmark-item" id="bookmark-{{ bookmark.id }}" data-title="{{ bookmark.title | lower }}" data-url="{{ bookmark.url | lower }}">
             <div class="bookmark-index">{{ loop.index }}.</div>
-            <img src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon">
+            <img data-src="{{ bookmark.get_favicon_url() }}" alt="" class="bookmark-favicon lazy-load" loading="lazy">
             <div class="bookmark-content">
                 <div class="bookmark-title-container">
                     <a href="{{ url_for('open_bookmark', bookmark_id=bookmark.id) }}" target="_blank" class="bookmark-title" title="{{ bookmark.title }}">
@@ -283,6 +290,37 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Implementacja Lazy Loading dla faviconów
+    function lazyLoadFavicons() {
+        const lazyImages = document.querySelectorAll('img.lazy-load');
+        
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        const image = entry.target;
+                        image.src = image.dataset.src;
+                        image.classList.remove('lazy-load');
+                        imageObserver.unobserve(image);
+                    }
+                });
+            });
+
+            lazyImages.forEach(function(image) {
+                imageObserver.observe(image);
+            });
+        } else {
+            // Fallback dla przeglądarek bez wsparcia IntersectionObserver
+            lazyImages.forEach(function(image) {
+                image.src = image.dataset.src;
+                image.classList.remove('lazy-load');
+            });
+        }
+    }
+
+    // Uruchom Lazy Loading po załadowaniu strony
+    lazyLoadFavicons();
+
     // Obsługa przełączania widoku (lista/kafelki)
     const viewSelector = document.getElementById('view-selector');
     const bookmarksContainer = document.querySelector('.bookmarks');
@@ -304,10 +342,14 @@ document.addEventListener('DOMContentLoaded', function() {
             bookmarksContainer.classList.add('tiles-view');
             // Dodaj klasy tile-link do linków w widoku kafelków
             setupTileLinks(true);
+            // Ponownie uruchom lazy loading po zmianie widoku
+            lazyLoadFavicons();
         } else {
             bookmarksContainer.classList.remove('tiles-view');
             // Usuń klasy tile-link
             setupTileLinks(false);
+            // Ponownie uruchom lazy loading po zmianie widoku
+            lazyLoadFavicons();
         }
         
         // Zapisz wybrany widok w localStorage
@@ -419,6 +461,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Sprawdź, czy lista jest pusta
                         checkIfEmpty();
+                        
+                        // Ponownie uruchom lazy loading po usunięciu
+                        lazyLoadFavicons();
                     }, 500); // Czas odpowiadający długości animacji
                 }
             })
@@ -545,6 +590,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Aktualizuj numerację widocznych elementów
         updateVisibleIndexes();
+        
+        // Ponownie uruchom lazy loading po filtrowaniu
+        lazyLoadFavicons();
         
         // Jeśli jesteśmy w widoku kafelków, odśwież tile-links dla widocznych elementów
         const isInTileView = bookmarksContainer.classList.contains('tiles-view');
