@@ -147,6 +147,25 @@ img[src] {
 .search-clear.active {
     display: block;
 }
+.add-bookmark-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--accent-color);
+    margin: 0 0 0 10px;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    text-decoration: none;
+}
+.add-bookmark-btn:hover {
+    opacity: 0.9;
+}
 .no-results {
     text-align: center;
     padding: 20px;
@@ -288,6 +307,9 @@ img[src] {
             </svg>
         </button>
     </div>
+    <a href="{{ url_for('add_bookmark') }}" class="add-bookmark-btn">
+        {{ t('navigation.add') }}
+    </a>
 </div>
 
 <div class="bookmarks">
